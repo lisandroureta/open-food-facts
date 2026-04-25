@@ -1,8 +1,12 @@
 import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { BrandCard } from "../src/components/BrandCard";
 import { CategoryCard } from "../src/components/CategoryCard";
+import { FilterTag } from "../src/components/FilterTag";
 import { Typography } from "../src/components/Typography";
+import { GLOBAL_BRANDS } from "../src/constants/mockBrands"; // Importamos la data simulada de marcas
 import { MOCK_CATEGORIES } from "../src/constants/mockCategories"; // Importamos la data simulada de categorías
+import { TASTE_FILTERS } from "../src/constants/mockFilters"; // Importamos la data simulada de filtros
 
 // Esta es la pantalla de inicio de la aplicación. Acá es donde el usuario verá el contenido principal al abrir la app.
 // La pantalla index.tsx solo se preocupa por dibujar, no almacena la información.
@@ -56,6 +60,31 @@ export default function HomeScreen() {
           />
         ))}
       </View>
+
+      {/* Filtros */}
+      <Typography variant="h2" style={styles.sectionTitle}>
+        Refine by Taste
+      </Typography>
+      <View style={styles.tagsContainer}>
+        {TASTE_FILTERS.map((filter) => (
+          <FilterTag key={filter} label={filter} />
+        ))}
+      </View>
+
+      {/* Marcas (Scroll Horizontal) */}
+      <Typography variant="h2" style={styles.sectionTitle}>
+        Global Brands
+      </Typography>
+      <Typography variant="body" color="#7F8C8D" style={styles.sectionSubtitle}>
+        Explored through the lens of quality.
+      </Typography>
+      <View style={styles.grid}>
+        {GLOBAL_BRANDS.map((brand) => (
+          <BrandCard key={brand.id} name={brand.name} />
+        ))}
+      </View>
+
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
@@ -72,9 +101,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: { marginBottom: 16 },
+  sectionSubtitle: { marginBottom: 20, fontSize: 14 },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
+  tagsContainer: { flexDirection: "row", flexWrap: "wrap" },
 });
