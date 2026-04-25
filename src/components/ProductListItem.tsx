@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import { Product } from "../constants/mockProducts";
+import { Product } from "../types";
 import { ScoreBadge } from "./ScoreBadge";
 import { Typography } from "./Typography";
 

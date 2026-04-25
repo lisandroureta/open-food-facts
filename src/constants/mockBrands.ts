@@ -1,8 +1,4 @@
-export interface Brand {
-  id: string;
-  name: string;
-  logoUrl?: string; // Lo hacemos opcional con "?" por si alguna marca no tiene logo
-}
+import { Brand } from "../types";
 
 export const GLOBAL_BRANDS: Brand[] = [
   // dejamos una con logo de ejemplo y el resto sin logo para probar ambos casos

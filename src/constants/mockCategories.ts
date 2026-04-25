@@ -1,15 +1,7 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Category } from "../types";
 
-// Este archivo es donde definimos la estructura de una categoría y un arreglo con datos simulados (mock) para usar en nuestra aplicación.
+// Este archivo es donde definimos un arreglo con datos simulados (mock) para usar en nuestra aplicación.
 // Se usa mucho esto de 'mock data' para tener una fuente de datos mientras desarrollamos, sin depender de una API que aún no conectamos.
-
-// Definimos el tipo para saber qué forma tiene una categoría
-export interface Category {
-  id: string;
-  title: string;
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  colors: readonly [string, string]; // Tupla de dos colores, ya que es una gradiente
-}
 
 // Creamos el arreglo simulando la respuesta de la API
 export const MOCK_CATEGORIES: Category[] = [
