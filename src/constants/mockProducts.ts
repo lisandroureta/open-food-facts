@@ -6,8 +6,22 @@ export interface Product {
   categoryId: string; // Para filtrar por categoría
   tastes: string[]; // Para filtrar por etiquetas
   imageUrl: string;
+  backgroundColor: string; // Para el fondo de la foto en el detalle
   nutriscore: "A" | "B" | "C" | "D" | "E";
   ecoscore: "A" | "B" | "C" | "D" | "E";
+  novaGroup?: number;
+  ingredients?: string;
+  allergens?: string;
+  nutritionalValues?: {
+    energy: string;
+    fat: string;
+    saturatedFat: string;
+    carbs: string;
+    sugars: string;
+    fiber: string;
+    protein: string;
+    salt: string;
+  };
 }
 
 export const MOCK_PRODUCTS: Product[] = [
@@ -20,8 +34,21 @@ export const MOCK_PRODUCTS: Product[] = [
     tastes: ["organic", "vegan", "gluten-free"],
     imageUrl:
       "https://images.openfoodfacts.org/images/products/322/084/011/0827/front_es.162.400.jpg",
+    backgroundColor: "#58D68D",
     nutriscore: "A",
     ecoscore: "A",
+    novaGroup: 1,
+    ingredients: "Kale, Ginger, Apple, Lemon.",
+    nutritionalValues: {
+      energy: "35 kcal",
+      fat: "0.2g",
+      saturatedFat: "0g",
+      carbs: "7g",
+      sugars: "4g",
+      fiber: "2g",
+      protein: "1g",
+      salt: "0.01g",
+    },
   },
   {
     id: "2",
@@ -32,8 +59,21 @@ export const MOCK_PRODUCTS: Product[] = [
     tastes: ["vegan", "no-added-sugar"],
     imageUrl:
       "https://images.openfoodfacts.org/images/products/544/900/021/4911/front_es.178.400.jpg",
+    backgroundColor: "#AED6F1",
     nutriscore: "C",
     ecoscore: "B",
+    novaGroup: 3,
+    ingredients: "Carbonated water, natural botanical extracts.",
+    nutritionalValues: {
+      energy: "2 kcal",
+      fat: "0g",
+      saturatedFat: "0g",
+      carbs: "0.5g",
+      sugars: "0g",
+      fiber: "0g",
+      protein: "0g",
+      salt: "0.05g",
+    },
   },
   {
     id: "3",
@@ -44,8 +84,252 @@ export const MOCK_PRODUCTS: Product[] = [
     tastes: ["vegan", "lactose-free"],
     imageUrl:
       "https://images.openfoodfacts.org/images/products/731/131/118/4887/front_es.52.400.jpg",
+    backgroundColor: "#E76F51",
     nutriscore: "A",
     ecoscore: "A",
+    novaGroup: 1,
+    ingredients: "Water, Oats (10%), Rapeseed oil, Minerals, Salt, Vitamins.",
+    allergens: "Contains gluten (oats).",
+    nutritionalValues: {
+      energy: "46 kcal",
+      fat: "1.5g",
+      saturatedFat: "0.2g",
+      carbs: "6.7g",
+      sugars: "4.1g",
+      fiber: "0.8g",
+      protein: "1.0g",
+      salt: "0.10g",
+    },
   },
-  // Podrías agregar más productos aquí...
+  {
+    id: "4",
+    name: "Dark Chocolate 85% Cocoa",
+    brand: "Nestlé Excellence",
+    brandId: "nestle",
+    categoryId: "chocolates",
+    tastes: ["vegan", "low-fat"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/761/303/498/5113/front_es.102.400.jpg",
+    backgroundColor: "#5D4037",
+    nutriscore: "D",
+    ecoscore: "B",
+    novaGroup: 3,
+    ingredients: "Cocoa mass, cocoa butter, fat-reduced cocoa powder, sugar.",
+    nutritionalValues: {
+      energy: "580 kcal",
+      fat: "46g",
+      saturatedFat: "28g",
+      carbs: "12g",
+      sugars: "11g",
+      fiber: "15g",
+      protein: "11g",
+      salt: "0.02g",
+    },
+  },
+  {
+    id: "5",
+    name: "Greek Style Plain Yogurt",
+    brand: "Danone Oikos",
+    brandId: "danone",
+    categoryId: "dairies",
+    tastes: ["vegetarian", "gluten-free"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/841/010/003/3256/front_es.145.400.jpg",
+    backgroundColor: "#D6EAF8",
+    nutriscore: "B",
+    ecoscore: "C",
+    novaGroup: 2,
+    ingredients: "Pasteurized milk, cream, milk solids, active cultures.",
+    allergens: "Contains Milk.",
+    nutritionalValues: {
+      energy: "125 kcal",
+      fat: "10g",
+      saturatedFat: "6.5g",
+      carbs: "3.8g",
+      sugars: "3.8g",
+      fiber: "0g",
+      protein: "4.8g",
+      salt: "0.12g",
+    },
+  },
+  {
+    id: "6",
+    name: "Classic Potato Chips",
+    brand: "Lay's",
+    brandId: "pepsi",
+    categoryId: "snacks",
+    tastes: ["gluten-free", "vegan"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/841/019/900/2119/front_es.365.400.jpg",
+    backgroundColor: "#F7DC6F",
+    nutriscore: "D",
+    ecoscore: "D",
+    novaGroup: 4,
+    ingredients: "Potatoes, vegetable oils, salt.",
+    nutritionalValues: {
+      energy: "530 kcal",
+      fat: "33g",
+      saturatedFat: "4g",
+      carbs: "53g",
+      sugars: "0.5g",
+      fiber: "4g",
+      protein: "6g",
+      salt: "1.2g",
+    },
+  },
+  {
+    id: "7",
+    name: "Corn Flakes Original",
+    brand: "Kellogg's",
+    brandId: "kelloggs",
+    categoryId: "breakfasts",
+    tastes: ["vegetarian", "low-fat"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/505/008/333/2952/front_es.229.400.jpg",
+    backgroundColor: "#FAD7A0",
+    nutriscore: "B",
+    ecoscore: "C",
+    novaGroup: 3,
+    ingredients: "Maize, sugar, barley malt flavouring, salt.",
+    allergens: "Contains Barley.",
+    nutritionalValues: {
+      energy: "378 kcal",
+      fat: "0.9g",
+      saturatedFat: "0.2g",
+      carbs: "84g",
+      sugars: "8g",
+      fiber: "3g",
+      protein: "7g",
+      salt: "1.1g",
+    },
+  },
+  {
+    id: "8",
+    name: "Tomato Basil Pasta Sauce",
+    brand: "Bertolli",
+    brandId: "unilever",
+    categoryId: "meals",
+    tastes: ["vegan", "organic", "no-added-sugar"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/004/173/305/0209/front_en.18.400.jpg",
+    backgroundColor: "#F1948A",
+    nutriscore: "A",
+    ecoscore: "A",
+    novaGroup: 2,
+    ingredients:
+      "Diced tomatoes, tomato puree, onions, garlic, basil, extra virgin olive oil.",
+    nutritionalValues: {
+      energy: "60 kcal",
+      fat: "2.5g",
+      saturatedFat: "0.5g",
+      carbs: "8g",
+      sugars: "5g",
+      fiber: "2g",
+      protein: "2g",
+      salt: "0.4g",
+    },
+  },
+  {
+    id: "9",
+    name: "Whole Grain Digestive Biscuits",
+    brand: "McVitie's",
+    brandId: "mondelez",
+    categoryId: "biscuits-and-cakes",
+    tastes: ["vegetarian", "high-fiber"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/500/016/819/5217/front_es.124.400.jpg",
+    backgroundColor: "#D35400",
+    nutriscore: "D",
+    ecoscore: "C",
+    novaGroup: 3,
+    ingredients:
+      "Flour (wheat flour, calcium, iron, niacin, thiamin), vegetable oil, sugar, wholemeal wheat flour.",
+    allergens: "Contains Wheat, Milk.",
+    nutritionalValues: {
+      energy: "480 kcal",
+      fat: "21g",
+      saturatedFat: "10g",
+      carbs: "62g",
+      sugars: "16g",
+      fiber: "4g",
+      protein: "7g",
+      salt: "1.3g",
+    },
+  },
+  {
+    id: "10",
+    name: "Lentil & Vegetable Soup",
+    brand: "Campbell's",
+    brandId: "mars",
+    categoryId: "meals",
+    tastes: ["vegan", "high-fiber", "low-fat"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/005/100/014/3342/front_en.59.400.jpg",
+    backgroundColor: "#7D6608",
+    nutriscore: "A",
+    ecoscore: "A",
+    novaGroup: 2,
+    ingredients: "Water, lentils, carrots, celery, spinach, onions, sea salt.",
+    nutritionalValues: {
+      energy: "80 kcal",
+      fat: "0.5g",
+      saturatedFat: "0g",
+      carbs: "14g",
+      sugars: "1g",
+      fiber: "5g",
+      protein: "5g",
+      salt: "0.6g",
+    },
+  },
+  {
+    id: "11",
+    name: "Classic Hummus",
+    brand: "Sabra",
+    brandId: "pepsi",
+    categoryId: "snacks",
+    tastes: ["vegan", "gluten-free", "high-fiber"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/004/082/201/1143/front_en.38.400.jpg",
+    backgroundColor: "#F9E79F",
+    nutriscore: "B",
+    ecoscore: "B",
+    novaGroup: 2,
+    ingredients: "Cooked chickpeas, tahini, soybean oil, garlic, salt.",
+    allergens: "Contains Sesame.",
+    nutritionalValues: {
+      energy: "170 kcal",
+      fat: "14g",
+      saturatedFat: "2g",
+      carbs: "8g",
+      sugars: "1g",
+      fiber: "4g",
+      protein: "5g",
+      salt: "0.5g",
+    },
+  },
+  {
+    id: "12",
+    name: "Fair Trade Espresso Beans",
+    brand: "Nestlé Azera",
+    brandId: "nestle",
+    categoryId: "beverages",
+    tastes: ["fair-trade", "no-added-sugar", "vegan"],
+    imageUrl:
+      "https://images.openfoodfacts.org/images/products/761/303/523/5156/front_es.45.400.jpg",
+    backgroundColor: "#2C3E50",
+    nutriscore: "A",
+    ecoscore: "A",
+    novaGroup: 1,
+    ingredients: "100% Arabica coffee beans.",
+    nutritionalValues: {
+      energy: "2 kcal",
+      fat: "0.1g",
+      saturatedFat: "0g",
+      carbs: "0g",
+      sugars: "0g",
+      fiber: "0g",
+      protein: "0.2g",
+      salt: "0g",
+    },
+  },
 ];
