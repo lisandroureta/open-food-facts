@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
 import { Typography } from "./Typography";
 
 // Calculamos el ancho para 2 columnas
@@ -7,21 +7,35 @@ const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
 
 interface BrandCardProps {
   name: string;
+  logoUrl?: string;
+  onPress: () => void;
 }
 
-export function BrandCard({ name }: BrandCardProps) {
+export function BrandCard({ name, logoUrl, onPress }: BrandCardProps) {
   return (
-    <View style={styles.card}>
-      {/* Contenedor del logo: un círculo blanco sobre el fondo gris claro */}
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.card, { opacity: pressed ? 0.8 : 1 }]}
+    >
       <View style={styles.logoContainer}>
-        <Typography variant="caption" color="#B2BABB" style={styles.logoText}>
-          {name.substring(0, 2)} {/* Simulamos un logo con iniciales */}
-        </Typography>
+        {logoUrl ? (
+          // Si hay logo, mostramos la imagen
+          <Image
+            source={{ uri: logoUrl }}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+        ) : (
+          // Si no hay logo, mostramos el texto de reserva (Fallback)
+          <Typography variant="caption" color="#B2BABB" style={styles.logoText}>
+            {name.substring(0, 2)}
+          </Typography>
+        )}
       </View>
       <Typography variant="body" style={styles.name}>
         {name}
       </Typography>
-    </View>
+    </Pressable>
   );
 }
 
@@ -51,6 +65,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
+  logoImage: { width: 40, height: 40 },
   logoText: {
     fontWeight: "bold",
     textTransform: "uppercase",

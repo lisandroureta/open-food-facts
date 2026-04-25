@@ -1,10 +1,17 @@
 export interface Brand {
   id: string;
   name: string;
+  logoUrl?: string; // Lo hacemos opcional con "?" por si alguna marca no tiene logo
 }
 
 export const GLOBAL_BRANDS: Brand[] = [
-  { id: "nestle", name: "nestle" },
+  // dejamos una con logo de ejemplo y el resto sin logo para probar ambos casos
+  {
+    id: "nestle",
+    name: "nestle",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Nestl%C3%A9_logo.svg/200px-Nestl%C3%A9_logo.svg.png",
+  },
   { id: "coca-cola", name: "coca-cola" },
   { id: "pepsi", name: "pepsi" },
   { id: "danone", name: "danone" },

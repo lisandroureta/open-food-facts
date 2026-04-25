@@ -67,7 +67,14 @@ export default function HomeScreen() {
       </Typography>
       <View style={styles.tagsContainer}>
         {TASTE_FILTERS.map((filter) => (
-          <FilterTag key={filter} label={filter} />
+          <FilterTag
+            key={filter}
+            label={filter}
+            // Enviamos un parámetro llamado 'taste'
+            onPress={() =>
+              router.push({ pathname: "/results", params: { taste: filter } })
+            }
+          />
         ))}
       </View>
 
@@ -80,7 +87,15 @@ export default function HomeScreen() {
       </Typography>
       <View style={styles.grid}>
         {GLOBAL_BRANDS.map((brand) => (
-          <BrandCard key={brand.id} name={brand.name} />
+          <BrandCard
+            key={brand.id}
+            name={brand.name}
+            logoUrl={brand.logoUrl}
+            // Enviamos un parámetro llamado 'brand'
+            onPress={() =>
+              router.push({ pathname: "/results", params: { brand: brand.id } })
+            }
+          />
         ))}
       </View>
 

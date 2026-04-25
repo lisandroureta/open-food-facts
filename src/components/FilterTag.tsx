@@ -3,11 +3,15 @@ import { Typography } from "./Typography";
 
 interface FilterTagProps {
   label: string;
+  onPress: () => void;
 }
 
-export function FilterTag({ label }: FilterTagProps) {
+export function FilterTag({ label, onPress }: FilterTagProps) {
   return (
-    <Pressable style={styles.tag}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.tag, { opacity: pressed ? 0.7 : 1 }]}
+    >
       <Typography variant="caption" color="#2E7D32">
         {label}
       </Typography>
