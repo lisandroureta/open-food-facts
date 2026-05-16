@@ -1,6 +1,7 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
+import { Header } from "../src/components/Header";
 import { ProductListItem } from "../src/components/ProductListItem";
 import { SearchBar } from "../src/components/SearchBar";
 import { Typography } from "../src/components/Typography";
@@ -45,8 +46,14 @@ export default function ResultsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
+      {/* Ocultamos el header nativo de Expo Router */}
+      <Stack.Screen options={{ headerShown: false }} />
+
+      {/* Colocamos nuestro Header */}
+      <Header onLeftPress={() => router.back()} rightElement="avatar" />
+
+      {/* Títulos de la sección */}
+      <View style={styles.titleSection}>
         <Typography variant="h1" style={styles.title}>
           {getHeaderTitle()}
         </Typography>
@@ -84,9 +91,9 @@ export default function ResultsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFFFFF" },
-  header: { padding: 20, paddingTop: 40, paddingBottom: 10 },
+  container: { flex: 1, backgroundColor: "#FDFEFE" },
+  titleSection: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 20 },
   title: { textTransform: "capitalize" },
-  subtitle: { marginTop: 4, letterSpacing: 1, marginBottom: 10 },
-  listContent: { padding: 20 },
+  subtitle: { marginTop: 4, letterSpacing: 1, textTransform: "uppercase" },
+  listContent: { paddingHorizontal: 20, paddingBottom: 20 },
 });

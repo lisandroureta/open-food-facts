@@ -1,17 +1,18 @@
 // Esta es la pantalla de detalle del producto. Aquí es donde el usuario verá la información detallada de un producto específico después de seleccionarlo de una lista o realizar una búsqueda.
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams } from "expo-router";
-import { Dimensions, Image, ScrollView, StyleSheet, View } from "react-native";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { AlertBox } from "../../src/components/AlertBox";
+import { Header } from "../../src/components/Header";
+import { NutritionRow } from "../../src/components/NutritionRow";
 import { ScoreBadge } from "../../src/components/ScoreBadge";
 import { Typography } from "../../src/components/Typography";
 import { MOCK_PRODUCTS } from "../../src/constants/mockProducts";
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
-
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
 
   // Buscamos el producto específico por su ID
   const product = MOCK_PRODUCTS.find((p) => p.id === id);
@@ -25,178 +26,237 @@ export default function ProductDetailScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      bounces={false}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* 1. Modificamos el Header nativo para que sea transparente */}
-      <Stack.Screen
-        options={{
-          headerTransparent: true,
-          headerTitle: "",
-          headerTintColor: "#1A1A1A", // Color de la flecha de volver
-        }}
-      />
+    <View style={styles.rootContainer}>
+      <Stack.Screen options={{ headerShown: false }} />
 
-      {/* 2. Sección Superior: Imagen con fondo de color */}
+      {/* 1. HEADER ANCLADO (FUERA DEL SCROLLVIEW) */}
+      <View style={styles.stickyHeader}>
+        <Header onLeftPress={() => router.back()} rightElement="share" />
+      </View>
+
+      {/* 2. FONDO CORAL (Queda por debajo del header gracias al zIndex) */}
       <View
         style={[
-          styles.imageBackground,
-          { backgroundColor: product.backgroundColor || "#F2F4F4" },
+          styles.colorBackground,
+          { backgroundColor: product.backgroundColor },
         ]}
-      >
-        <Image
-          source={{ uri: product.imageUrl }}
-          style={styles.productImage}
-          resizeMode="contain"
-        />
-      </View>
-
-      {/* 3. Tarjeta Blanca Superpuesta (El truco del margen negativo) */}
-      <View style={styles.card}>
-        {/* Botón flotante de Favorito */}
-        <View style={styles.favoriteButton}>
-          <MaterialCommunityIcons name="heart" size={24} color="#27AE60" />
-        </View>
-
-        {/* Info Principal */}
-        <Typography variant="caption" color="#27AE60" style={styles.brand}>
-          {product.brand}
-        </Typography>
-        <Typography variant="h1" style={styles.title}>
-          {product.name}
-        </Typography>
-
-        {/* Badges (Podríamos reutilizar ScoreBadge aquí y acomodarlos en Flexbox) */}
-        <View style={styles.scoresRow}>
-          <ScoreBadge type="nutri" grade={product.nutriscore} />
-          <ScoreBadge type="eco" grade={product.ecoscore} />
-          {/* Si tuviéramos un componente NovaBadge, iría aquí */}
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* Ingredientes */}
-        <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons
-            name="leaf"
-            size={20}
-            color="#27AE60"
-            style={{ marginRight: 8 }}
+      />
+      <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
+        {/* Sección de la Imagen */}
+        <View style={styles.imageSection}>
+          <Image
+            source={{ uri: product.imageUrl }}
+            style={styles.productImage}
+            resizeMode="contain"
           />
-          <Typography variant="h3">Ingredients</Typography>
         </View>
-        <Typography variant="body" color="#5D6D7E" style={styles.paragraph}>
-          {product.ingredients}
-        </Typography>
 
-        {/* Alerta de Alérgenos */}
-        {product.allergens && (
-          <AlertBox title="ALLERGEN INFORMATION" message={product.allergens} />
-        )}
-
-        <View style={styles.divider} />
-
-        {/* Tabla Nutricional Simulada */}
-        <Typography variant="h3" style={{ marginBottom: 16 }}>
-          Nutritional Values (per 100ml)
-        </Typography>
-
-        {product.nutritionalValues && (
-          <View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Energy
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.energy}
-              </Typography>
-            </View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Fat
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.fat}
-              </Typography>
-            </View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Saturated Fat
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.saturatedFat}
-              </Typography>
-            </View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Carbs
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.carbs}
-              </Typography>
-            </View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Sugars
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.sugars}
-              </Typography>
-            </View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Fiber
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.fiber}
-              </Typography>
-            </View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Protein
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.protein}
-              </Typography>
-            </View>
-            <View style={styles.tableRow}>
-              <Typography variant="body" color="#5D6D7E">
-                Salt
-              </Typography>
-              <Typography variant="body" style={{ fontWeight: "bold" }}>
-                {product.nutritionalValues.salt}
-              </Typography>
-            </View>
-            {/* Aquí podrías mapear el resto de los valores nutricionales... */}
+        {/* Tarjeta Blanca Superpuesta */}
+        <View style={styles.card}>
+          <View style={styles.favoriteButton}>
+            <MaterialCommunityIcons name="heart" size={24} color="#27AE60" />
           </View>
-        )}
 
-        <View style={{ height: 60 }} />
-      </View>
-    </ScrollView>
+          <Typography variant="caption" color={"#27AE60"} style={styles.brand}>
+            {product.brand}
+          </Typography>
+          <Typography variant="h1" style={styles.title}>
+            {product.name}
+          </Typography>
+
+          {/* Badges de puntuación */}
+          <View style={styles.scoresRow}>
+            <ScoreBadge
+              type="nutri"
+              grade={product.nutriscore}
+              variant="card"
+              backgroundColor={"#F4F6F6"}
+            />
+            {product.novaGroup && (
+              <ScoreBadge
+                type="nova"
+                grade={product.novaGroup as any}
+                variant="card"
+                backgroundColor={"#F4F6F6"}
+              />
+            )}
+            <ScoreBadge
+              type="eco"
+              grade={product.ecoscore}
+              variant="card"
+              backgroundColor={"#F4F6F6"}
+            />
+          </View>
+
+          {/* Badges de nutrientes destacados */}
+          <View style={styles.scoresRow}>
+            <View style={styles.nutrientBadge}>
+              <Typography
+                variant="caption"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeText}
+              >
+                ENERGY
+              </Typography>
+              <Typography
+                variant="h3"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeValue}
+              >
+                193 kJ
+              </Typography>
+            </View>
+            <View style={styles.nutrientBadge}>
+              <Typography
+                variant="caption"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeText}
+              >
+                FAT
+              </Typography>
+              <Typography
+                variant="h3"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeValue}
+              >
+                {product.nutritionalValues?.fat}
+              </Typography>
+            </View>
+            <View style={styles.nutrientBadge}>
+              <Typography
+                variant="caption"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeText}
+              >
+                PROTEIN
+              </Typography>
+              <Typography
+                variant="h3"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeValue}
+              >
+                {product.nutritionalValues?.protein}
+              </Typography>
+            </View>
+          </View>
+
+          {/* Sección de Ingredientes */}
+          <View style={styles.ingredientsSection}>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons
+                name="leaf"
+                size={20}
+                color="#27AE60"
+                style={{ marginRight: 8 }}
+              />
+              <Typography variant="h3">Ingredients</Typography>
+            </View>
+            <Typography variant="body" color="#5D6D7E" style={styles.paragraph}>
+              {product.ingredients}
+            </Typography>
+
+            {product.allergens && (
+              <AlertBox
+                title="ALLERGEN INFORMATION"
+                message={product.allergens}
+              />
+            )}
+          </View>
+
+          {/* Tabla Nutricional usando los nuevos componentes modulares */}
+          <View style={styles.nutritionSection}>
+            <Typography variant="h3" style={{ marginBottom: 16 }}>
+              Nutritional Values (per 100ml)
+            </Typography>
+
+            {product.nutritionalValues && (
+              <View>
+                <NutritionRow
+                  label="Energy"
+                  value={product.nutritionalValues.energy}
+                />
+                <NutritionRow
+                  label="Fat"
+                  value={product.nutritionalValues.fat}
+                />
+                <NutritionRow
+                  label="of which saturates"
+                  value={product.nutritionalValues.saturatedFat}
+                  indent
+                />
+                <NutritionRow
+                  label="Carbohydrate"
+                  value={product.nutritionalValues.carbs}
+                />
+                <NutritionRow
+                  label="of which sugars"
+                  value={product.nutritionalValues.sugars}
+                  indent
+                />
+                <NutritionRow
+                  label="Fibre"
+                  value={product.nutritionalValues.fiber}
+                />
+                <NutritionRow
+                  label="Protein"
+                  value={product.nutritionalValues.protein}
+                />
+                <NutritionRow
+                  label="Salt"
+                  value={product.nutritionalValues.salt}
+                />
+              </View>
+            )}
+          </View>
+
+          <View style={{ height: 60 }} />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFFFFF" },
+  rootContainer: { flex: 1, backgroundColor: "#F4F6F6" },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  imageBackground: {
+  stickyHeader: {
+    backgroundColor: "#FFFFFF",
+    zIndex: 10, // Súper importante: asegura que el header siempre esté por encima de todo
+    elevation: 5, // Sombra sutil en Android para separarlo del fondo
+    shadowColor: "#000", // Sombra en iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+  },
+  colorBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "45%",
+  },
+  imageSection: {
     width: "100%",
-    height: SCREEN_HEIGHT * 0.45, // Ocupa el 45% de la pantalla
-    paddingTop: 80, // Espacio para el header transparente
+    height: 300,
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 10,
+    marginBottom: -40,
   },
   productImage: { width: "60%", height: "80%" },
   card: {
     backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    marginTop: -32, // ¡El truco de superposición!
+    borderRadius: 32,
+    marginHorizontal: 16,
+    marginBottom: 24,
     padding: 24,
-    minHeight: SCREEN_HEIGHT * 0.6,
+    minHeight: "60%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
   favoriteButton: {
     position: "absolute",
@@ -213,22 +273,32 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    zIndex: 10,
   },
-  brand: { marginBottom: 8, letterSpacing: 1 },
+  brand: { marginBottom: 8, letterSpacing: 1, fontWeight: "bold" },
   title: { marginBottom: 20 },
-  scoresRow: { flexDirection: "row", marginBottom: 24 },
-  divider: { height: 1, backgroundColor: "#EAEDED", marginVertical: 24 },
+  scoresRow: { flexDirection: "row", marginBottom: 16, alignItems: "center" },
+  nutrientBadge: {
+    backgroundColor: "#D5F5E3",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginRight: 8,
+    alignItems: "center",
+  },
+  nutrientBadgeText: { fontSize: 10, fontWeight: "bold", marginBottom: 4 },
+  nutrientBadgeValue: { fontSize: 16, fontWeight: "bold" },
+  ingredientsSection: {
+    backgroundColor: "#F4F6F6",
+    padding: 20,
+    borderRadius: 12,
+    marginVertical: 24,
+  },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
   },
-  paragraph: { lineHeight: 24 },
-  tableRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F2F4F4",
-  },
+  paragraph: { lineHeight: 22, fontSize: 14, color: "#1C2833" },
+  nutritionSection: { paddingVertical: 12 },
 });

@@ -1,8 +1,9 @@
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { BrandCard } from "../src/components/BrandCard";
 import { CategoryCard } from "../src/components/CategoryCard";
 import { FilterTag } from "../src/components/FilterTag";
+import { Header } from "../src/components/Header";
 import { Typography } from "../src/components/Typography";
 import { GLOBAL_BRANDS } from "../src/constants/mockBrands"; // Importamos la data simulada de marcas
 import { MOCK_CATEGORIES } from "../src/constants/mockCategories"; // Importamos la data simulada de categorías
@@ -13,99 +14,122 @@ import { TASTE_FILTERS } from "../src/constants/mockFilters"; // Importamos la d
 
 export default function HomeScreen() {
   const router = useRouter();
-  const handleCategoryPress = (categoryName: string) => {
-    // Empujamos (push) la pantalla de resultados a la pila
-    // Pasamos el nombre de la categoría como parámetro para que la otra pantalla sepa qué mostrar
-    router.push({
-      pathname: "/results",
-      params: { category: categoryName },
-    });
-  };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
-      <Typography variant="caption" color="green" style={styles.subtitle}>
-        CURATED FLAVORS
-      </Typography>
-      <Typography variant="h1" style={styles.title}>
-        The art of{" "}
-        <Typography variant="h1" color="green" style={{ fontStyle: "italic" }}>
-          conscious
-        </Typography>{" "}
-        discovery.
-      </Typography>
+    <View style={styles.container}>
+      {/* 1. Ocultamos el header feo de Expo */}
+      <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Categorías */}
-      <View style={styles.sectionHeader}>
-        <Typography variant="h2">Categories</Typography>
-        <Typography variant="caption" color="green">
-          View Library
+      {/* 2. Colocamos el nuestro con el menú y el avatar */}
+      <Header
+        leftIcon="menu"
+        onLeftPress={() => console.log("Abrir menú lateral")}
+        rightElement="avatar"
+      />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+      >
+        {/* Header */}
+        <Typography variant="caption" color="green" style={styles.subtitle}>
+          CURATED FLAVORS
         </Typography>
-      </View>
+        <Typography variant="h1" style={styles.title}>
+          The art of{" "}
+          <Typography
+            variant="h1"
+            color="green"
+            style={{ fontStyle: "italic" }}
+          >
+            conscious
+          </Typography>{" "}
+          discovery.
+        </Typography>
 
-      <View style={styles.grid}>
-        {MOCK_CATEGORIES.map((cat) => (
-          <CategoryCard
-            key={cat.id}
-            title={cat.title}
-            icon={cat.icon}
-            colors={cat.colors}
-            onPress={() =>
-              router.push({
-                pathname: "/results",
-                params: { category: cat.id },
-              })
-            }
-          />
-        ))}
-      </View>
+        {/* Categorías */}
+        <View style={styles.sectionHeader}>
+          <Typography variant="h2">Categories</Typography>
+          <Typography variant="caption" color="green">
+            View Library
+          </Typography>
+        </View>
 
-      {/* Filtros */}
-      <Typography variant="h2" style={styles.sectionTitle}>
-        Refine by Taste
-      </Typography>
-      <View style={styles.tagsContainer}>
-        {TASTE_FILTERS.map((filter) => (
-          <FilterTag
-            key={filter}
-            label={filter}
-            // Enviamos un parámetro llamado 'taste'
-            onPress={() =>
-              router.push({ pathname: "/results", params: { taste: filter } })
-            }
-          />
-        ))}
-      </View>
+        <View style={styles.grid}>
+          {MOCK_CATEGORIES.map((cat) => (
+            <CategoryCard
+              key={cat.id}
+              title={cat.title}
+              icon={cat.icon}
+              colors={cat.colors}
+              onPress={() =>
+                router.push({
+                  pathname: "/results",
+                  params: { category: cat.id },
+                })
+              }
+            />
+          ))}
+        </View>
 
-      {/* Marcas (Scroll Horizontal) */}
-      <Typography variant="h2" style={styles.sectionTitle}>
-        Global Brands
-      </Typography>
-      <Typography variant="body" color="#7F8C8D" style={styles.sectionSubtitle}>
-        Explored through the lens of quality.
-      </Typography>
-      <View style={styles.grid}>
-        {GLOBAL_BRANDS.map((brand) => (
-          <BrandCard
-            key={brand.id}
-            name={brand.name}
-            logoUrl={brand.logoUrl}
-            // Enviamos un parámetro llamado 'brand'
-            onPress={() =>
-              router.push({ pathname: "/results", params: { brand: brand.id } })
-            }
-          />
-        ))}
-      </View>
+        {/* Filtros */}
+        <Typography variant="h2" style={styles.sectionTitle}>
+          Refine by Taste
+        </Typography>
+        <View style={styles.tagsContainer}>
+          {TASTE_FILTERS.map((filter) => (
+            <FilterTag
+              key={filter}
+              label={filter}
+              // Enviamos un parámetro llamado 'taste'
+              onPress={() =>
+                router.push({ pathname: "/results", params: { taste: filter } })
+              }
+            />
+          ))}
+        </View>
 
-      <View style={{ height: 40 }} />
-    </ScrollView>
+        {/* Marcas (Scroll Horizontal) */}
+        <Typography variant="h2" style={styles.sectionTitle}>
+          Global Brands
+        </Typography>
+        <Typography
+          variant="body"
+          color="#7F8C8D"
+          style={styles.sectionSubtitle}
+        >
+          Explored through the lens of quality.
+        </Typography>
+        <View style={styles.grid}>
+          {GLOBAL_BRANDS.map((brand) => (
+            <BrandCard
+              key={brand.id}
+              name={brand.name}
+              logoUrl={brand.logoUrl}
+              // Enviamos un parámetro llamado 'brand'
+              onPress={() =>
+                router.push({
+                  pathname: "/results",
+                  params: { brand: brand.id },
+                })
+              }
+            />
+          ))}
+        </View>
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FDFEFE" },
+  container: {
+    flex: 1,
+    backgroundColor: "#F9F9F9",
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
   content: { padding: 20 },
   title: { marginBottom: 32 },
   subtitle: { marginBottom: 8, letterSpacing: 1 },
