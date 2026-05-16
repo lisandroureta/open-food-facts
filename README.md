@@ -1,51 +1,39 @@
-# Welcome to your Expo app 👋
+# 🍃 Taller de Nuevas Tecnologías
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este proyecto es una entrega parcial para la aplicación mobile de la cursada. Es un catálogo enfocado en el descubrimiento consciente de productos alimenticios y bebidas.
 
-## Get started
+El proyecto está construido con **React Native** y **Expo**, utilizando **TypeScript** para garantizar la seguridad de tipos y una arquitectura escalable.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 🏗️ Arquitectura y Estructura del Proyecto
 
-2. Start the app
+El proyecto sigue el principio de **Separación de Responsabilidades (Separation of Concerns)** y adopta un enfoque basado en componentes atómicos. La estructura de carpetas está diseñada para escalar fluidamente cuando se integre una API real en el futuro.
 
-   ```bash
-   npx expo start
-   ```
+```text
+📦 open-food-facts
+ ┣ 📂 app/                  # Capa de Enrutamiento (Expo Router)
+ ┃ ┣ 📜 index.tsx           # Pantalla de Inicio (Home Screen)
+ ┃ ┣ 📜 results.tsx         # Pantalla de Lista/Filtros de Productos
+ ┃ ┗ 📂 product/
+ ┃   ┗ 📜 [id].tsx          # Pantalla de Detalle (Dynamic Route)
+ ┣ 📂 assets/               # Recursos Locales (Offline-first approach)
+ ┃ ┗ 📂 images/             # Banco de imágenes del proyecto
+ ┃   ┣ 📂 brands/           # Logos de marcas
+ ┃   ┗ 📂 products/         # Fotografías de productos
+ ┣ 📂 src/                  # Código fuente modular
+ ┃ ┣ 📂 components/         # Sistema de Diseño y UI Atómica
+ ┃ ┣ 📂 constants/          # Capa de Datos Simulados (Mocking)
+ ┃ ┣ 📂 hooks/              # [Reservado] Custom hooks para lógica y estado global (Post-API)
+ ┃ ┣ 📂 services/           # [Reservado] Módulos de peticiones HTTP / Fetch (Post-API)
+ ┃ ┣ 📂 types/              # Contratos y Tipado Estricto (TypeScript)
+ ┃ ┗ 📂 utils/              # [Reservado] Funciones helper y formateadores (Post-API)
+ ┗ 📜 package.json          # Dependencias y scripts
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+Aclaración:
+ La separación de src fuera de app se debe a una convención técnica de Expo Router.
+ Expo Router escanea de forma automática cada archivo y carpeta dentro del directorio app para transformarlo en una pantalla o ruta de navegación accesible.
+ Arquitectónicamente, la carpeta app se reserva de forma exclusiva para definir el mapa de navegación de la aplicación.
+ Mantener la carpeta src afuera significa que todo el motor de la app queda aislado de la infraestructura de rutas.
+ Incluir src dentro de app serviría si se tratase de un proyecto estructurado bajo un esquema de navegación tradicional (como React Navigation), donde las rutas se escriben por código y no dependen de la ubicación física de las carpetas.
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-"# open-food-facts" 
