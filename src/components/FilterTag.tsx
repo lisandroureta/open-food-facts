@@ -21,7 +21,7 @@ export function FilterTag({ label, onPress }: FilterTagProps) {
 
 const styles = StyleSheet.create({
   tag: {
-    backgroundColor: "#E8F5E9", // Verde muy clarito
+    backgroundColor: "#E8F5E9",
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,

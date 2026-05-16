@@ -7,6 +7,9 @@ interface AlertBoxProps {
   message: string;
 }
 
+// ¿por qué hacer de un mensaje de advertencia un componente aparte?
+// Encapsula el diseño de las advertencias. Al aislarlo, cualquier pantalla
+// que necesite mostrar un error o precaución puede reutilizar AlertBox.
 export function AlertBox({ title, message }: AlertBoxProps) {
   return (
     <View style={styles.container}>
@@ -31,7 +34,7 @@ export function AlertBox({ title, message }: AlertBoxProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: "#FDEDEC", // Rojo muy clarito
+    backgroundColor: "#FDEDEC",
     padding: 16,
     borderRadius: 12,
     marginTop: 16,

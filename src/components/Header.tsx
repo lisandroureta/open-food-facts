@@ -1,9 +1,13 @@
-// src/components/ProductHeader.tsx
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Typography } from "./Typography";
 
+// Componente unificado para la cabecera.
+// Utiliza un patrón de variantes (leftIcon, rightElement) para adaptarse a las diferentes pantallas sin duplicar código.
+// En las pantallas ocultamos el header nativo de Expo Router para tener control total del diseño con este componente personalizado.
+
+// Contrato de propiedades
 interface HeaderProps {
   leftIcon?: "arrow-left" | "menu";
   onLeftPress?: () => void;
@@ -13,15 +17,17 @@ interface HeaderProps {
 }
 
 export function Header({
-  leftIcon = "arrow-left", // Por defecto será la flecha
+  leftIcon = "arrow-left",
   onLeftPress,
   title = "Digital Epicurean",
   rightElement = "none",
   onRightPress,
 }: HeaderProps) {
-  const insets = useSafeAreaInsets(); // Le pedimos al sistema operativo las medidas de la cámara/notch
+  // Extraemos las medidas físicas del dispositivo (Notch, Dynamic Island, Status Bar de Android)
+  // para evitar que el header colisione con la cámara.
+  const insets = useSafeAreaInsets();
 
-  // Función para renderizar dinámicamente el lado derecho
+  // Función para renderizar dinámicamente el lado derecho según la variante solicitada por la pantalla padre
   const renderRightElement = () => {
     if (rightElement === "share") {
       return (
@@ -47,6 +53,7 @@ export function Header({
   };
 
   return (
+    // Sumamos el inset superior al padding para empujar el contenido hacia abajo
     <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
       <Pressable onPress={onLeftPress || (() => {})} style={styles.iconButton}>
         {/* Usamos el ícono que nos pasen por las props */}
@@ -78,9 +85,7 @@ const styles = StyleSheet.create({
   avatarPlaceholder: {
     width: 32,
     height: 32,
-    //borderRadius: 16,
-    //borderWidth: 1.5,
-    borderColor: "#1D533A", // Mantenemos el color verde de la marca
+    borderColor: "#1D533A",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#FFFFFF",

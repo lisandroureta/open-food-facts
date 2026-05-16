@@ -5,32 +5,33 @@ import { CategoryCard } from "../src/components/CategoryCard";
 import { FilterTag } from "../src/components/FilterTag";
 import { Header } from "../src/components/Header";
 import { Typography } from "../src/components/Typography";
-import { GLOBAL_BRANDS } from "../src/constants/mockBrands"; // Importamos la data simulada de marcas
-import { MOCK_CATEGORIES } from "../src/constants/mockCategories"; // Importamos la data simulada de categorías
-import { TASTE_FILTERS } from "../src/constants/mockFilters"; // Importamos la data simulada de filtros
+import { GLOBAL_BRANDS } from "../src/constants/mockBrands";
+import { MOCK_CATEGORIES } from "../src/constants/mockCategories";
+import { TASTE_FILTERS } from "../src/constants/mockFilters";
 
-// Esta es la pantalla de inicio de la aplicación. Acá es donde el usuario verá el contenido principal al abrir la app.
-// La pantalla index.tsx solo se preocupa por dibujar, no almacena la información.
+// Esta es la pantalla de inicio de la aplicación. Por el momento, esto es lo que el usuario verá al abrir la app.
+// La pantalla index.tsx solo se preocupa por "dibujar", no almacena la información.
 
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      {/* 1. Ocultamos el header feo de Expo */}
+      {/* Ocultamos el header nativo de Expo Router */}
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* 2. Colocamos el nuestro con el menú y el avatar */}
+      {/* Implementamos el nuestro personalizado */}
       <Header
         leftIcon="menu"
         onLeftPress={() => console.log("Abrir menú lateral")}
         rightElement="avatar"
       />
+
+      {/* Usamos ScrollView en lugar de FlatList porque el Home contiene secciones heterogéneas, no una lista masiva de datos idénticos */}
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
       >
-        {/* Header */}
         <Typography variant="caption" color="green" style={styles.subtitle}>
           CURATED FLAVORS
         </Typography>
@@ -61,6 +62,7 @@ export default function HomeScreen() {
               title={cat.title}
               icon={cat.icon}
               colors={cat.colors}
+              // Pasamos parámetros por ruta para que la pantalla de Resultados sepa qué filtrar
               onPress={() =>
                 router.push({
                   pathname: "/results",
@@ -80,7 +82,7 @@ export default function HomeScreen() {
             <FilterTag
               key={filter}
               label={filter}
-              // Enviamos un parámetro llamado 'taste'
+              // Enviamos el parámetro, en este caso llamado 'taste'
               onPress={() =>
                 router.push({ pathname: "/results", params: { taste: filter } })
               }
@@ -88,7 +90,7 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* Marcas (Scroll Horizontal) */}
+        {/* Marcas */}
         <Typography variant="h2" style={styles.sectionTitle}>
           Global Brands
         </Typography>
@@ -104,8 +106,8 @@ export default function HomeScreen() {
             <BrandCard
               key={brand.id}
               name={brand.name}
-              logoUrl={brand.logoUrl}
-              // Enviamos un parámetro llamado 'brand'
+              logo={brand.logo}
+              // Y acá también pasamos el parámetro
               onPress={() =>
                 router.push({
                   pathname: "/results",
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  sectionTitle: { marginBottom: 16 },
+  sectionTitle: { marginTop: 24, marginBottom: 16 },
   sectionSubtitle: { marginBottom: 20, fontSize: 14 },
   grid: {
     flexDirection: "row",

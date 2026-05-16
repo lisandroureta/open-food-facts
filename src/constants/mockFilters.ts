@@ -1,3 +1,4 @@
+// Data simulada (Mocking Data)
 export const TASTE_FILTERS = [
   "organic",
   "vegan",

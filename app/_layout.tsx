@@ -1,8 +1,8 @@
 import { Stack } from "expo-router";
 
-// Este es el layout raíz de la aplicación. Aquí definimos la estructura de navegación y las pantallas principales.
-// Este archivo es el "director de orquesta" de la navegación. Aquí le diremos a Expo que queremos usar un Stack.
-// Cada pantalla se define con un nombre y opciones, como el título que aparecerá en la barra superior.
+// Este es el layout raíz de la aplicación. Acá definimos la estructura de navegación y las pantallas principales.
+// Este archivo es como el director de la navegación. Acá le decimos a Expo que queremos usar un Stack.
+// Cada pantalla se define con un nombre y opciones.
 
 export default function RootLayout() {
   return (

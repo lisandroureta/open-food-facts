@@ -1,9 +1,6 @@
 import { Category } from "../types";
 
-// Este archivo es donde definimos un arreglo con datos simulados (mock) para usar en nuestra aplicación.
-// Se usa mucho esto de 'mock data' para tener una fuente de datos mientras desarrollamos, sin depender de una API que aún no conectamos.
-
-// Creamos el arreglo simulando la respuesta de la API
+// Data simulada (Mocking Data)
 export const MOCK_CATEGORIES: Category[] = [
   {
     id: "beverages",

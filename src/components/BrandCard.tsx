@@ -1,32 +1,37 @@
-import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  ImageSourcePropType,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import { Typography } from "./Typography";
 
 // Calculamos el ancho para 2 columnas
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
+// La pantalla tiene un padding de 20px de cada lado (40px en total)
+// Para que el hueco del medio sea de 16 píxeles, la matemática debe ser: 40 (padding) + 16 (hueco) = 56
+const CARD_WIDTH = (SCREEN_WIDTH - 56) / 2;
 
 interface BrandCardProps {
   name: string;
-  logoUrl?: string;
+  logo?: ImageSourcePropType;
   onPress: () => void;
 }
 
-export function BrandCard({ name, logoUrl, onPress }: BrandCardProps) {
+export function BrandCard({ name, logo, onPress }: BrandCardProps) {
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [styles.card, { opacity: pressed ? 0.8 : 1 }]}
     >
       <View style={styles.logoContainer}>
-        {logoUrl ? (
+        {logo ? (
           // Si hay logo, mostramos la imagen
-          <Image
-            source={{ uri: logoUrl }}
-            style={styles.logoImage}
-            resizeMode="contain"
-          />
+          <Image source={logo} style={styles.logoImage} resizeMode="contain" />
         ) : (
-          // Si no hay logo, mostramos el texto de reserva (Fallback)
+          // Si no hay logo en la futura base de datos, mostramos un texto de reserva (Fallback)
           <Typography variant="caption" color="#B2BABB" style={styles.logoText}>
             {name.substring(0, 2)}
           </Typography>

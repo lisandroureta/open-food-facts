@@ -5,12 +5,14 @@ import { Typography } from "./Typography";
 
 // Calculamos el ancho para que entren 2 por fila con margen
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2; // Pantalla menos márgenes laterales
+// La pantalla tiene un padding de 20px de cada lado (40px en total)
+// Para que el hueco del medio sea de 16 píxeles, la matemática debe ser: 40 (padding) + 16 (hueco) = 56
+const CARD_WIDTH = (SCREEN_WIDTH - 56) / 2; // Pantalla menos márgenes laterales
 
 interface CategoryCardProps {
   title: string;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  colors: readonly [string, string];
+  colors: readonly [string, string]; // Idealmente para inyectar gradientes o fondos dinámicos
   onPress: () => void;
 }
 
@@ -63,7 +65,7 @@ const styles = StyleSheet.create({
     right: 16,
   },
   icon: {
-    opacity: 0.5, // Estilo sutil como en el diseño
+    opacity: 0.5,
   },
   title: {
     fontWeight: "bold",

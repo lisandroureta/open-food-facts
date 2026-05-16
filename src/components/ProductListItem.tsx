@@ -9,6 +9,7 @@ interface ProductListItemProps {
   onPress: () => void;
 }
 
+// Componente optimizado para renderizado repetitivo en listas (List Row Container)
 export function ProductListItem({ product, onPress }: ProductListItemProps) {
   return (
     <Pressable
@@ -21,13 +22,13 @@ export function ProductListItem({ product, onPress }: ProductListItemProps) {
       {/* Imagen */}
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: product.imageUrl }}
+          source={product.imageUrl}
           style={styles.image}
           resizeMode="contain"
         />
       </View>
 
-      {/* Info Central */}
+      {/* Info central */}
       <View style={styles.infoContainer}>
         <Typography variant="h3" style={styles.name} numberOfLines={2}>
           {product.name}
@@ -36,14 +37,14 @@ export function ProductListItem({ product, onPress }: ProductListItemProps) {
           {product.brand}
         </Typography>
 
-        {/* Badges */}
+        {/* Reutilización del ScoreBadge en su variante compacta (Default) */}
         <View style={styles.badgesContainer}>
           <ScoreBadge type="nutri" grade={product.nutriscore} />
           <ScoreBadge type="eco" grade={product.ecoscore} />
         </View>
       </View>
 
-      {/* Flecha Derecha */}
+      {/* Flecha derecha */}
       <View style={styles.arrowContainer}>
         <MaterialCommunityIcons
           name="chevron-right"

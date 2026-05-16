@@ -1,5 +1,6 @@
 import { Product } from "../types";
 
+// Data simulada (Mocking Data)
 export const MOCK_PRODUCTS: Product[] = [
   {
     id: "1",
@@ -8,8 +9,8 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "danone",
     categoryId: "beverages",
     tastes: ["organic", "vegan", "gluten-free"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/322/084/011/0827/front_es.162.400.jpg",
+    // Almacenamiento estático local (offline-first ready) para la entrega parcial
+    imageUrl: require("../../assets/images/products/organic-cold-pressed-kale-ginger.png"),
     backgroundColor: "#58D68D",
     nutriscore: "A",
     ecoscore: "A",
@@ -33,8 +34,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "coca-cola",
     categoryId: "beverages",
     tastes: ["vegan", "no-added-sugar"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/544/900/021/4911/front_es.178.400.jpg",
+    imageUrl: require("../../assets/images/products/artisan-sparkling-botanical-mist.jpg"),
     backgroundColor: "#AED6F1",
     nutriscore: "C",
     ecoscore: "B",
@@ -58,8 +58,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "nestle",
     categoryId: "dairies",
     tastes: ["vegan", "lactose-free"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/731/131/118/4887/front_es.52.400.jpg",
+    imageUrl: require("../../assets/images/products/the-original-oatly-oat-milk.png"),
     backgroundColor: "#E76F51",
     nutriscore: "A",
     ecoscore: "A",
@@ -84,8 +83,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "nestle",
     categoryId: "chocolates",
     tastes: ["vegan", "low-fat"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/761/303/498/5113/front_es.102.400.jpg",
+    imageUrl: require("../../assets/images/products/dark-chocolate-85-cocoa.jpg"),
     backgroundColor: "#5D4037",
     nutriscore: "D",
     ecoscore: "B",
@@ -109,8 +107,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "danone",
     categoryId: "dairies",
     tastes: ["vegetarian", "gluten-free"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/841/010/003/3256/front_es.145.400.jpg",
+    imageUrl: require("../../assets/images/products/greek-style-plain-yogurt.png"),
     backgroundColor: "#D6EAF8",
     nutriscore: "B",
     ecoscore: "C",
@@ -135,8 +132,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "pepsi",
     categoryId: "snacks",
     tastes: ["gluten-free", "vegan"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/841/019/900/2119/front_es.365.400.jpg",
+    imageUrl: require("../../assets/images/products/classic-potato-chips.jpg"),
     backgroundColor: "#F7DC6F",
     nutriscore: "D",
     ecoscore: "D",
@@ -160,8 +156,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "kelloggs",
     categoryId: "breakfasts",
     tastes: ["vegetarian", "low-fat"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/505/008/333/2952/front_es.229.400.jpg",
+    imageUrl: require("../../assets/images/products/corn-flakes-original.png"),
     backgroundColor: "#FAD7A0",
     nutriscore: "B",
     ecoscore: "C",
@@ -186,8 +181,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "unilever",
     categoryId: "meals",
     tastes: ["vegan", "organic", "no-added-sugar"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/004/173/305/0209/front_en.18.400.jpg",
+    imageUrl: require("../../assets/images/products/tomato-basil-pasta-sauce.png"),
     backgroundColor: "#F1948A",
     nutriscore: "A",
     ecoscore: "A",
@@ -212,8 +206,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "mondelez",
     categoryId: "biscuits-and-cakes",
     tastes: ["vegetarian", "high-fiber"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/500/016/819/5217/front_es.124.400.jpg",
+    imageUrl: require("../../assets/images/products/whole-grain-digestive-biscuits.jpg"),
     backgroundColor: "#D35400",
     nutriscore: "D",
     ecoscore: "C",
@@ -239,8 +232,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "mars",
     categoryId: "meals",
     tastes: ["vegan", "high-fiber", "low-fat"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/005/100/014/3342/front_en.59.400.jpg",
+    imageUrl: require("../../assets/images/products/lentil-vegetable-soup.jpg"),
     backgroundColor: "#7D6608",
     nutriscore: "A",
     ecoscore: "A",
@@ -264,8 +256,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "pepsi",
     categoryId: "snacks",
     tastes: ["vegan", "gluten-free", "high-fiber"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/004/082/201/1143/front_en.38.400.jpg",
+    imageUrl: require("../../assets/images/products/classic-hummus.png"),
     backgroundColor: "#F9E79F",
     nutriscore: "B",
     ecoscore: "B",
@@ -290,8 +281,7 @@ export const MOCK_PRODUCTS: Product[] = [
     brandId: "nestle",
     categoryId: "beverages",
     tastes: ["fair-trade", "no-added-sugar", "vegan"],
-    imageUrl:
-      "https://images.openfoodfacts.org/images/products/761/303/523/5156/front_es.45.400.jpg",
+    imageUrl: require("../../assets/images/products/fair-trade-espresso-beans.png"),
     backgroundColor: "#2C3E50",
     nutriscore: "A",
     ecoscore: "A",

@@ -6,7 +6,7 @@ import { Typography } from "./Typography";
 interface ScoreBadgeProps {
   type: "nutri" | "eco" | "nova";
   grade: "A" | "B" | "C" | "D" | "E" | 1 | 2 | 3 | 4;
-  variant?: "default" | "card"; // 'default' es la pastilla vieja, 'card' es la nueva Oatly
+  variant?: "default" | "card"; // Patrón de diseño por variantes
   backgroundColor?: string;
 }
 
@@ -18,14 +18,14 @@ export function ScoreBadge({
 }: ScoreBadgeProps) {
   // Lógica de colores (compartida para ambas variantes)
   const getGradeColor = () => {
-    if (grade === "A" || grade === 1) return "#008A47"; // Verde oscuro
-    if (grade === "B" || grade === 2) return "#82E0AA"; // Verde claro
-    if (grade === "C" || grade === 3) return "#F1C40F"; // Amarillo
-    if (grade === "D" || grade === 4) return "#E67E22"; // Naranja
-    return "#E74C3C"; // Rojo
+    if (grade === "A" || grade === 1) return "#008A47";
+    if (grade === "B" || grade === 2) return "#82E0AA";
+    if (grade === "C" || grade === 3) return "#F1C40F";
+    if (grade === "D" || grade === 4) return "#E67E22";
+    return "#E74C3C";
   };
 
-  // --- RENDERING PARA LA VARIANTE "CARD" (OATLY - Usada en el DETALLE) ---
+  // Variante 'card'. Diseño expandido utilizado en la pantalla de Detalle
   if (variant === "card") {
     const getTitle = () => {
       if (type === "nutri") return "NUTRI-\nSCORE";
@@ -54,8 +54,7 @@ export function ScoreBadge({
     );
   }
 
-  // --- RENDERING PARA LA VARIANTE "DEFAULT" (PASTILLA VIEJA - Usada en la LISTA) ---
-  // Nota: La variante default no suele usar NOVA o números, pero por seguridad, la tipamos.
+  // Variante 'default'. Diseño compacto en pastilla utilizado en Listas
   const getPillText = () => {
     if (type === "nova") return `NOVA ${grade}`; // Caso raro en lista
     return `${type === "nutri" ? "NUTRI-SCORE" : "ECO-SCORE"} ${grade}`;
@@ -71,7 +70,7 @@ export function ScoreBadge({
 }
 
 const styles = StyleSheet.create({
-  // --- ESTILOS DE LA VARIANTE "CARD" (OATLY) ---
+  // Estilos encapsulados por variante para evitar colisiones visuales en tiempo de ejecución
   cardContainer: {
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -91,11 +90,10 @@ const styles = StyleSheet.create({
   cardGradeBox: { paddingVertical: 4, paddingHorizontal: 12, borderRadius: 6 },
   cardGradeText: { fontSize: 16, fontWeight: "bold" },
 
-  // --- ESTILOS DE LA VARIANTE "DEFAULT" (PASTILLA COMPACTA ANTERIOR) ---
   pillContainer: {
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 4, // Borde cuadrado anterior
+    borderRadius: 4,
     marginRight: 8,
   },
   pillText: {

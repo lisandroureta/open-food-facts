@@ -1,3 +1,6 @@
+import { ImageSourcePropType } from "react-native";
+
+// Estructura integral del modelo de Producto basada en la especificación Open Food Facts
 export interface Product {
   id: string;
   name: string;
@@ -5,7 +8,7 @@ export interface Product {
   brandId: string; // Para filtrar por marca
   categoryId: string; // Para filtrar por categoría
   tastes: string[]; // Para filtrar por etiquetas
-  imageUrl: string;
+  imageUrl: ImageSourcePropType; // Tipado nativo de React Native para recursos locales empaquetados por Metro
   backgroundColor: string; // Para el fondo de la foto en el detalle
   nutriscore: "A" | "B" | "C" | "D" | "E";
   ecoscore: "A" | "B" | "C" | "D" | "E";

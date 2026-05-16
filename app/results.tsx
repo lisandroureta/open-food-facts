@@ -7,28 +7,28 @@ import { SearchBar } from "../src/components/SearchBar";
 import { Typography } from "../src/components/Typography";
 import { MOCK_PRODUCTS } from "../src/constants/mockProducts";
 
-// Esta es la pantalla de resultados. Aquí es donde el usuario verá la lista de resultados después de realizar una búsqueda o acción que genere resultados.
+// Esta es la pantalla de resultados. Acá es donde el usuario verá la lista de resultados después de realizar una búsqueda o acción que genere resultados.
 
 export default function ResultsScreen() {
   const router = useRouter();
 
-  // 1. Atrapamos los parámetros que vienen del Home
+  // Extraemos los filtros dinámicos provenientes de la navegación
   const params = useLocalSearchParams();
   const { category, brand, taste } = params;
 
   // Estado para el texto de búsqueda
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 2. Filtramos la base de datos simulada según el parámetro que llegó
+  // Filtramos la base de datos simulada según el parámetro que llegó
   const filteredProducts = MOCK_PRODUCTS.filter((product) => {
-    // 1. Filtrado por parámetros del Home
+    // Filtrado por parámetros del Home
     const matchesCategory = category ? product.categoryId === category : true;
     const matchesBrand = brand ? product.brandId === brand : true;
     const matchesTaste = taste
       ? product.tastes.includes(taste as string)
       : true;
 
-    // 2. Filtrado por texto de búsqueda (nombre del producto o marca)
+    // Filtrado por texto de búsqueda (nombre del producto o marca)
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase());
@@ -36,7 +36,7 @@ export default function ResultsScreen() {
     return matchesCategory && matchesBrand && matchesTaste && matchesSearch;
   });
 
-  // 3. Calculamos el título de la pantalla
+  // Calculamos el título de la pantalla
   const getHeaderTitle = () => {
     if (category) return category.toString();
     if (brand) return brand.toString();
@@ -62,7 +62,9 @@ export default function ResultsScreen() {
         </Typography>
       </View>
 
-      {/* Lista de productos con la SearchBar como Header */}
+      {/* Utilizamos FlatList en lugar de ScrollView por rendimiento.
+        FlatList hace lazy rendering para mostrar solo los elementos visibles en pantalla.
+      */}
       <FlatList
         data={filteredProducts}
         keyExtractor={(item) => item.id}
@@ -80,6 +82,8 @@ export default function ResultsScreen() {
           />
         )}
         // Ponemos la barra de búsqueda dentro de la lista para que haga scroll con ella
+        // La barra queda como cabecera nativa de la lista.
+        // Esto previene fallos de foco con el teclado virtual.
         ListHeaderComponent={
           <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
         }

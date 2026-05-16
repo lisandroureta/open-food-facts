@@ -7,6 +7,8 @@ interface SearchBarProps {
   placeholder?: string;
 }
 
+// SearchBar es como un componente "tonto". No maneja su propio estado interno,
+// sino que delega el control al componente padre (ResultsScreen) vía props (value/onChangeText).
 export function SearchBar({
   value,
   onChangeText,

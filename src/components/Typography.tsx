@@ -11,6 +11,8 @@ interface TypographyProps extends TextProps {
   align?: "auto" | "left" | "right" | "center" | "justify";
 }
 
+// Centralizamos el control tipográfico para evitar estilos "huérfanos" (hardcoded).
+// Consistencia visual en toda la app y facilita cambios globales a futuro.
 export function Typography({
   variant = "body", // Por defecto será un texto normal
   color = "#1A1A1A", // Un gris casi negro por defecto (mejor que negro puro)
@@ -33,12 +35,12 @@ export function Typography({
   );
 }
 
-// una especie de diccionario de estilos centralizado
+// Escala tipográfica estandarizada
 const styles = StyleSheet.create({
   h1: {
     fontSize: 32,
     fontWeight: "bold",
-    letterSpacing: -0.5, // Los títulos grandes suelen verse mejor un poco más juntos
+    letterSpacing: -0.5, // los títulos grandes suelen verse mejor un poco más juntos
   },
   h2: {
     fontSize: 24,
@@ -55,6 +57,6 @@ const styles = StyleSheet.create({
   caption: {
     fontSize: 12,
     fontWeight: "500",
-    textTransform: "uppercase", // Ideal para las letritas pequeñas de las categorías
+    textTransform: "uppercase", // para las letritas pequeñas de las categorías
   },
 });

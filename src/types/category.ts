@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+// Contrato estricto para Categorías Globales
 export interface Category {
   id: string;
   title: string;

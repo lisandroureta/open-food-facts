@@ -16,7 +16,7 @@ export default function ProductDetailScreen() {
 
   // Buscamos el producto específico por su ID
   const product = MOCK_PRODUCTS.find((p) => p.id === id);
-
+  // Y manejamos en caso de estado vacío
   if (!product) {
     return (
       <View style={styles.center}>
@@ -29,29 +29,31 @@ export default function ProductDetailScreen() {
     <View style={styles.rootContainer}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* 1. HEADER ANCLADO (FUERA DEL SCROLLVIEW) */}
+      {/* Header anclado (sticky) fuera del flujo del Scroll, con Z-Index 10 para que siempre esté por encima de todo */}
       <View style={styles.stickyHeader}>
         <Header onLeftPress={() => router.back()} rightElement="share" />
       </View>
 
-      {/* 2. FONDO CORAL (Queda por debajo del header gracias al zIndex) */}
+      {/* Fondo de color absoluto (que depende del producto). Cubre la mitad de la pantalla y queda detrás del contenido (Z-Index 1) */}
       <View
         style={[
           styles.colorBackground,
           { backgroundColor: product.backgroundColor },
         ]}
       />
+
+      {/* ScrollView. Contiene la imagen del producto y la tarjeta flotante. Z-Index 5 */}
       <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
         {/* Sección de la Imagen */}
         <View style={styles.imageSection}>
           <Image
-            source={{ uri: product.imageUrl }}
+            source={product.imageUrl}
             style={styles.productImage}
             resizeMode="contain"
           />
         </View>
 
-        {/* Tarjeta Blanca Superpuesta */}
+        {/* Tarjeta blanca flotante */}
         <View style={styles.card}>
           <View style={styles.favoriteButton}>
             <MaterialCommunityIcons name="heart" size={24} color="#27AE60" />
@@ -103,7 +105,7 @@ export default function ProductDetailScreen() {
                 color={"#1D8348"}
                 style={styles.nutrientBadgeValue}
               >
-                193 kJ
+                {product.nutritionalValues?.energy}
               </Typography>
             </View>
             <View style={styles.nutrientBadge}>
@@ -140,7 +142,7 @@ export default function ProductDetailScreen() {
             </View>
           </View>
 
-          {/* Sección de Ingredientes */}
+          {/* Sección de ingredientes */}
           <View style={styles.ingredientsSection}>
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons
@@ -163,7 +165,7 @@ export default function ProductDetailScreen() {
             )}
           </View>
 
-          {/* Tabla Nutricional usando los nuevos componentes modulares */}
+          {/* Tabla nutricional usando los componentes modulares */}
           <View style={styles.nutritionSection}>
             <Typography variant="h3" style={{ marginBottom: 16 }}>
               Nutritional Values (per 100ml)
@@ -221,9 +223,9 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   stickyHeader: {
     backgroundColor: "#FFFFFF",
-    zIndex: 10, // Súper importante: asegura que el header siempre esté por encima de todo
-    elevation: 5, // Sombra sutil en Android para separarlo del fondo
-    shadowColor: "#000", // Sombra en iOS
+    zIndex: 10,
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 3,

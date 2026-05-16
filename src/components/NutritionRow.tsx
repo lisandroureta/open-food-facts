@@ -8,6 +8,7 @@ interface NutritionRowProps {
   indent?: boolean;
 }
 
+// Desacopla la lógica de renderizado de la tabla nutricional (en el detalle de producto)
 export function NutritionRow({
   label,
   value,

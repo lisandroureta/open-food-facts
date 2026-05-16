@@ -1,20 +1,56 @@
 import { Brand } from "../types";
 
+// Data simulada (Mocking Data)
 export const GLOBAL_BRANDS: Brand[] = [
-  // dejamos una con logo de ejemplo y el resto sin logo para probar ambos casos
   {
     id: "nestle",
     name: "nestle",
-    logoUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Nestl%C3%A9_logo.svg/200px-Nestl%C3%A9_logo.svg.png",
+    // Almacenamiento estático local (offline-first ready) para la entrega parcial
+    logo: require("../../assets/images/brands/nestle.png"),
   },
-  { id: "coca-cola", name: "coca-cola" },
-  { id: "pepsi", name: "pepsi" },
-  { id: "danone", name: "danone" },
-  { id: "kelloggs", name: "kelloggs" },
-  { id: "unilever", name: "unilever" },
-  { id: "mondelez", name: "mondelez" },
-  { id: "mars", name: "mars" },
-  { id: "ferrero", name: "ferrero" },
-  { id: "lactalis", name: "lactalis" },
+  {
+    id: "coca-cola",
+    name: "coca-cola",
+    logo: require("../../assets/images/brands/coca-cola.png"),
+  },
+  {
+    id: "pepsi",
+    name: "pepsi",
+    logo: require("../../assets/images/brands/pepsi.png"),
+  },
+  {
+    id: "danone",
+    name: "danone",
+    logo: require("../../assets/images/brands/danone.png"),
+  },
+  {
+    id: "kelloggs",
+    name: "kelloggs",
+    logo: require("../../assets/images/brands/kelloggs.png"),
+  },
+  {
+    id: "unilever",
+    name: "unilever",
+    logo: require("../../assets/images/brands/unilever.png"),
+  },
+  {
+    id: "mondelez",
+    name: "mondelez",
+    logo: require("../../assets/images/brands/mondelez.png"),
+  },
+  {
+    id: "mars",
+    name: "mars",
+    logo: require("../../assets/images/brands/mars.png"),
+  },
+  {
+    id: "ferrero",
+    name: "ferrero",
+    logo: require("../../assets/images/brands/ferrero.png"),
+  },
+  {
+    id: "lactalis",
+    name: "lactalis",
+    logo: require("../../assets/images/brands/lactalis.png"),
+  },
 ];
