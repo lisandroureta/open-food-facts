@@ -1,6 +1,8 @@
 import { ImageSourcePropType } from "react-native";
 
-// Estructura integral del modelo de Producto basada en la especificación Open Food Facts
+// Este archivo define los tipos relacionados con los productos
+
+// Estructura provisional del modelo de Producto
 export interface Product {
   id: string;
   name: string;
@@ -25,4 +27,28 @@ export interface Product {
     protein: string;
     salt: string;
   };
+}
+
+// Los modelos basados en las especificaciones de la api de Open Food Facts
+export interface APIProduct {
+  code: string;
+  product_name?: string;
+  brands?: string;
+  image_url?: string;
+  nutriscore_grade?: string;
+}
+
+export interface APIProductResponse {
+  code: string;
+  status: number;
+  product: APIProduct;
+  status_verbose: string;
+}
+
+// Representa la respuesta de la API cuando buscamos una lista de productos
+export interface APISearchResponse {
+  count: number;
+  page: number;
+  page_size: number;
+  products: APIProduct[]; // ¡Ojo a los corchetes! Significa "una lista de APIProducts"
 }

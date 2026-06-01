@@ -2,25 +2,78 @@
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { AlertBox } from "../../src/components/AlertBox";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { Header } from "../../src/components/Header";
-import { NutritionRow } from "../../src/components/NutritionRow";
 import { ScoreBadge } from "../../src/components/ScoreBadge";
 import { Typography } from "../../src/components/Typography";
-import { MOCK_PRODUCTS } from "../../src/constants/mockProducts";
+import { getProductByBarcode } from "../../src/services/api";
+import { APIProduct } from "../../src/types/product";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
-  // Buscamos el producto específico por su ID
-  const product = MOCK_PRODUCTS.find((p) => p.id === id);
-  // Y manejamos en caso de estado vacío
-  if (!product) {
+  // --- FASE 1: MEMORIA (ESTADO) ---
+  const [product, setProduct] = useState<APIProduct | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState(true);
+
+  // --- FASE 2: CICLO DE VIDA (CONEXIÓN A INTERNET) ---
+  useEffect(() => {
+    const fetchProductData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      // TRUCO TEMPORAL: Si vienes del Home tocando la botella de Oatly (id '3'),
+      // forzamos a que busque la Coca-Cola para probar la API real.
+      // Si ya le pasas un código de barras real, usa ese.
+      const barcodeToSearch = id === "3" ? "5449000000996" : (id as string);
+
+      const data = await getProductByBarcode(barcodeToSearch);
+
+      if (data && data.product) {
+        setProduct(data.product);
+      } else {
+        setError("Producto no encontrado en la base de datos mundial.");
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchProductData();
+  }, [id]);
+
+  // --- FASE 3: RENDERIZADO DE ESTADOS DE CARGA Y ERROR ---
+  if (isLoading) {
     return (
-      <View style={styles.center}>
-        <Typography variant="h2">Producto no encontrado</Typography>
+      <View style={[styles.rootContainer, styles.center]}>
+        <ActivityIndicator size="large" color="#27AE60" />
+        <Typography variant="body" color="gray" style={{ marginTop: 16 }}>
+          Conectando con Open Food Facts...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <View style={[styles.rootContainer, styles.center]}>
+        <Header onLeftPress={() => router.back()} />
+        <Typography
+          variant="h2"
+          color="#C0392B"
+          style={{ textAlign: "center", padding: 20 }}
+        >
+          {error}
+        </Typography>
       </View>
     );
   }
@@ -35,22 +88,33 @@ export default function ProductDetailScreen() {
       </View>
 
       {/* Fondo de color absoluto (que depende del producto). Cubre la mitad de la pantalla y queda detrás del contenido (Z-Index 1) */}
-      <View
-        style={[
-          styles.colorBackground,
-          { backgroundColor: product.backgroundColor },
-        ]}
-      />
+      <View style={[styles.colorBackground, { backgroundColor: "#E5E7E9" }]} />
 
       {/* ScrollView. Contiene la imagen del producto y la tarjeta flotante. Z-Index 5 */}
       <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
         {/* Sección de la Imagen */}
         <View style={styles.imageSection}>
-          <Image
-            source={product.imageUrl}
-            style={styles.productImage}
-            resizeMode="contain"
-          />
+          {product.image_url && (
+            <>
+              {/* Mostramos una rueda de carga SOLO si la imagen sigue bajando */}
+              {isImageLoading && (
+                <ActivityIndicator
+                  size="large"
+                  color="#27AE60"
+                  style={{ position: "absolute", zIndex: 1 }}
+                />
+              )}
+
+              <Image
+                source={{ uri: product.image_url }}
+                style={styles.productImage}
+                resizeMode="contain"
+                // React Native nos avisa cuando empieza y termina de descargar
+                onLoadStart={() => setIsImageLoading(true)}
+                onLoadEnd={() => setIsImageLoading(false)}
+              />
+            </>
+          )}
         </View>
 
         {/* Tarjeta blanca flotante */}
@@ -60,156 +124,29 @@ export default function ProductDetailScreen() {
           </View>
 
           <Typography variant="caption" color={"#27AE60"} style={styles.brand}>
-            {product.brand}
+            {product.brands || "Marca Desconocida"}
           </Typography>
           <Typography variant="h1" style={styles.title}>
-            {product.name}
+            {product.product_name || "Sin Nombre"}
           </Typography>
 
           {/* Badges de puntuación */}
           <View style={styles.scoresRow}>
-            <ScoreBadge
-              type="nutri"
-              grade={product.nutriscore}
-              variant="card"
-              backgroundColor={"#F4F6F6"}
-            />
-            {product.novaGroup && (
+            {product.nutriscore_grade && (
               <ScoreBadge
-                type="nova"
-                grade={product.novaGroup as any}
+                type="nutri"
+                grade={product.nutriscore_grade.toUpperCase() as any}
                 variant="card"
                 backgroundColor={"#F4F6F6"}
               />
             )}
-            <ScoreBadge
-              type="eco"
-              grade={product.ecoscore}
-              variant="card"
-              backgroundColor={"#F4F6F6"}
-            />
           </View>
 
           {/* Badges de nutrientes destacados */}
-          <View style={styles.scoresRow}>
-            <View style={styles.nutrientBadge}>
-              <Typography
-                variant="caption"
-                color={"#1D8348"}
-                style={styles.nutrientBadgeText}
-              >
-                ENERGY
-              </Typography>
-              <Typography
-                variant="h3"
-                color={"#1D8348"}
-                style={styles.nutrientBadgeValue}
-              >
-                {product.nutritionalValues?.energy}
-              </Typography>
-            </View>
-            <View style={styles.nutrientBadge}>
-              <Typography
-                variant="caption"
-                color={"#1D8348"}
-                style={styles.nutrientBadgeText}
-              >
-                FAT
-              </Typography>
-              <Typography
-                variant="h3"
-                color={"#1D8348"}
-                style={styles.nutrientBadgeValue}
-              >
-                {product.nutritionalValues?.fat}
-              </Typography>
-            </View>
-            <View style={styles.nutrientBadge}>
-              <Typography
-                variant="caption"
-                color={"#1D8348"}
-                style={styles.nutrientBadgeText}
-              >
-                PROTEIN
-              </Typography>
-              <Typography
-                variant="h3"
-                color={"#1D8348"}
-                style={styles.nutrientBadgeValue}
-              >
-                {product.nutritionalValues?.protein}
-              </Typography>
-            </View>
-          </View>
 
           {/* Sección de ingredientes */}
-          <View style={styles.ingredientsSection}>
-            <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons
-                name="leaf"
-                size={20}
-                color="#27AE60"
-                style={{ marginRight: 8 }}
-              />
-              <Typography variant="h3">Ingredients</Typography>
-            </View>
-            <Typography variant="body" color="#5D6D7E" style={styles.paragraph}>
-              {product.ingredients}
-            </Typography>
-
-            {product.allergens && (
-              <AlertBox
-                title="ALLERGEN INFORMATION"
-                message={product.allergens}
-              />
-            )}
-          </View>
 
           {/* Tabla nutricional usando los componentes modulares */}
-          <View style={styles.nutritionSection}>
-            <Typography variant="h3" style={{ marginBottom: 16 }}>
-              Nutritional Values (per 100ml)
-            </Typography>
-
-            {product.nutritionalValues && (
-              <View>
-                <NutritionRow
-                  label="Energy"
-                  value={product.nutritionalValues.energy}
-                />
-                <NutritionRow
-                  label="Fat"
-                  value={product.nutritionalValues.fat}
-                />
-                <NutritionRow
-                  label="of which saturates"
-                  value={product.nutritionalValues.saturatedFat}
-                  indent
-                />
-                <NutritionRow
-                  label="Carbohydrate"
-                  value={product.nutritionalValues.carbs}
-                />
-                <NutritionRow
-                  label="of which sugars"
-                  value={product.nutritionalValues.sugars}
-                  indent
-                />
-                <NutritionRow
-                  label="Fibre"
-                  value={product.nutritionalValues.fiber}
-                />
-                <NutritionRow
-                  label="Protein"
-                  value={product.nutritionalValues.protein}
-                />
-                <NutritionRow
-                  label="Salt"
-                  value={product.nutritionalValues.salt}
-                />
-              </View>
-            )}
-          </View>
 
           <View style={{ height: 60 }} />
         </View>

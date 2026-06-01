@@ -1,4 +1,3 @@
-// src/components/NutritionRow.tsx
 import { StyleSheet, View } from "react-native";
 import { Typography } from "./Typography";
 

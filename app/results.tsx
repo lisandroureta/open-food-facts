@@ -1,11 +1,12 @@
+import { Typography } from "@/src/components/Typography";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { Header } from "../src/components/Header";
 import { ProductListItem } from "../src/components/ProductListItem";
 import { SearchBar } from "../src/components/SearchBar";
-import { Typography } from "../src/components/Typography";
-import { MOCK_PRODUCTS } from "../src/constants/mockProducts";
+import { searchProducts } from "../src/services/api";
+import { APIProduct } from "../src/types/product";
 
 // Esta es la pantalla de resultados. Acá es donde el usuario verá la lista de resultados después de realizar una búsqueda o acción que genere resultados.
 
@@ -16,32 +17,69 @@ export default function ResultsScreen() {
   const params = useLocalSearchParams();
   const { category, brand, taste } = params;
 
-  // Estado para el texto de búsqueda
+  // --- FASE 1: ESTADOS DE REACT ---
   const [searchQuery, setSearchQuery] = useState("");
+  const [products, setProducts] = useState<APIProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-  // Filtramos la base de datos simulada según el parámetro que llegó
-  const filteredProducts = MOCK_PRODUCTS.filter((product) => {
-    // Filtrado por parámetros del Home
-    const matchesCategory = category ? product.categoryId === category : true;
-    const matchesBrand = brand ? product.brandId === brand : true;
-    const matchesTaste = taste
-      ? product.tastes.includes(taste as string)
-      : true;
+  // --- FASE 2: EL MOTOR DE BÚSQUEDA (CON DEBOUNCE) ---
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+      setPage(1); // Reiniciamos la página a 1 ante una nueva búsqueda
 
-    // Filtrado por texto de búsqueda (nombre del producto o marca)
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchQuery.toLowerCase());
+      const queryToSearch =
+        searchQuery.trim() !== "" ? searchQuery : category || brand || "drink";
 
-    return matchesCategory && matchesBrand && matchesTaste && matchesSearch;
-  });
+      const { products, totalCount, error } = await searchProducts(
+        queryToSearch as string,
+        1,
+      );
 
-  // Calculamos el título de la pantalla
+      setProducts(products);
+      setTotalCount(totalCount);
+      if (error) setErrorMessage(error);
+      setIsLoading(false);
+    }, 600);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, category, brand]);
+
+  // FASE 2: CARGAR MÁS PRODUCTOS (Scroll Infinito)
+  const handleLoadMore = async () => {
+    // Si ya estamos cargando, o si ya descargamos todos los productos, no hacemos nada
+    if (isFetchingMore || isLoading || products.length >= totalCount) return;
+
+    setIsFetchingMore(true);
+    const nextPage = page + 1;
+    const queryToSearch =
+      searchQuery.trim() !== "" ? searchQuery : category || brand || "drink";
+
+    const { products: newProducts, error } = await searchProducts(
+      queryToSearch as string,
+      nextPage,
+    );
+
+    if (!error && newProducts.length > 0) {
+      // Sumamos los productos nuevos a los que ya teníamos en memoria
+      setProducts((prevProducts) => [...prevProducts, ...newProducts]);
+      setPage(nextPage);
+    }
+
+    setIsFetchingMore(false);
+  };
+
   const getHeaderTitle = () => {
-    if (category) return category.toString();
-    if (brand) return brand.toString();
-    if (taste) return taste.toString();
-    return "Search";
+    if (searchQuery) return `Buscando: ${searchQuery}`;
+    if (category) return category;
+    if (brand) return brand;
+    if (taste) return taste;
+    return "Descubrir";
   };
 
   return (
@@ -52,44 +90,70 @@ export default function ResultsScreen() {
       {/* Colocamos nuestro Header */}
       <Header onLeftPress={() => router.back()} rightElement="avatar" />
 
-      {/* Títulos de la sección */}
       <View style={styles.titleSection}>
         <Typography variant="h1" style={styles.title}>
           {getHeaderTitle()}
         </Typography>
-        <Typography variant="caption" color="gray" style={styles.subtitle}>
-          {filteredProducts.length} ITEMS FOUND
-        </Typography>
+        {errorMessage ? (
+          <Typography variant="caption" color="#E74C3C" style={styles.subtitle}>
+            {errorMessage}
+          </Typography>
+        ) : (
+          <Typography variant="caption" color="gray" style={styles.subtitle}>
+            {isLoading ? "BUSCANDO..." : `${totalCount} PRODUCTOS ENCONTRADOS`}
+          </Typography>
+        )}
       </View>
 
-      {/* Utilizamos FlatList en lugar de ScrollView por rendimiento.
-        FlatList hace lazy rendering para mostrar solo los elementos visibles en pantalla.
-      */}
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ProductListItem
-            product={item}
-            // La mejor práctica con Expo Router y TypeScript para rutas dinámicas es pasar el "molde"
-            // exacto de la ruta en el pathname y pasar los datos dinámicos a través de params.
-            onPress={() =>
-              router.push({
-                pathname: "/product/[id]",
-                params: { id: item.id },
-              })
-            }
-          />
-        )}
-        // Ponemos la barra de búsqueda dentro de la lista para que haga scroll con ella
-        // La barra queda como cabecera nativa de la lista.
-        // Esto previene fallos de foco con el teclado virtual.
-        ListHeaderComponent={
-          <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-        }
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+      {/* --- FASE 3: RENDERIZADO DE LA LISTA --- */}
+      {isLoading ? (
+        <View style={styles.centerIndicator}>
+          <ActivityIndicator size="large" color="#27AE60" />
+        </View>
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item, index) => item.code + index.toString()}
+          ListHeaderComponent={
+            <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+          }
+          // --- MAGIA DEL SCROLL INFINITO AQUÍ ---
+          onEndReached={handleLoadMore} // Qué función llamar al llegar al final
+          onEndReachedThreshold={0.5} // Qué tan cerca del final debe dispararse (0.5 = a mitad de la última tarjeta)
+          ListFooterComponent={
+            // Rueda de carga pequeña al final de la lista
+            isFetchingMore ? (
+              <ActivityIndicator
+                size="small"
+                color="#27AE60"
+                style={{ marginVertical: 20 }}
+              />
+            ) : null
+          }
+          // --------------------------------------
+          renderItem={({ item }) => {
+            const mappedProduct: any = {
+              id: item.code,
+              name: item.product_name || "Sin Nombre",
+              brand: item.brands || "Marca desconocida",
+              imageUrl: item.image_url ? { uri: item.image_url } : null,
+              nutriscore: item.nutriscore_grade
+                ? item.nutriscore_grade.toUpperCase()
+                : "?",
+              ecoscore: "?",
+            };
+
+            return (
+              <ProductListItem
+                product={mappedProduct}
+                onPress={() => router.push(`/product/${item.code}`)}
+              />
+            );
+          }}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }
@@ -100,4 +164,5 @@ const styles = StyleSheet.create({
   title: { textTransform: "capitalize" },
   subtitle: { marginTop: 4, letterSpacing: 1, textTransform: "uppercase" },
   listContent: { paddingHorizontal: 20, paddingBottom: 20 },
+  centerIndicator: { flex: 1, justifyContent: "center", alignItems: "center" },
 });
