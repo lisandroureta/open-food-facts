@@ -13,8 +13,8 @@ export const getProductByBarcode = async (
   barcode: string,
 ): Promise<APIProductResponse | null> => {
   try {
-    // 1. OPTIMIZACIÓN: Armamos la URL inyectando el código dinámico y pidiendo solo 4 campos (Payload Optimization)
-    const url = `${BASE_URL}/${barcode}.json?fields=code,product_name,brands,image_url,nutriscore_grade`;
+    // 1. OPTIMIZACIÓN: Armamos la URL inyectando el código dinámico
+    const url = `${BASE_URL}/${barcode}.json?fields=code,product_name,brands,image_url,nutriscore_grade,ecoscore_grade,nova_group,ingredients_text,allergens,nutriments`;
 
     // 2. LA PETICIÓN: fetch() va a internet. 'await' le dice al código:
     // "Espera aquí el ticket (Promesa) hasta que el servidor de Francia responda, pero no congeles la pantalla"
@@ -56,9 +56,7 @@ export const searchProducts = async (
   page: number = 1,
 ): Promise<SearchResult> => {
   try {
-    // NUEVO: Inyectamos dinámicamente el número de página en la URL (&page=...)
-    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&page_size=24&page=${page}&fields=code,product_name,brands,image_url,nutriscore_grade`;
-
+    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&page_size=24&page=${page}&fields=code,product_name,brands,image_url,nutriscore_grade,ecoscore_grade,nova_group`;
     const response = await fetch(url, {
       headers: {
         "User-Agent": "DigitalEpicurean - React Native App - Academic Project",

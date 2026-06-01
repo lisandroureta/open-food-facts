@@ -140,7 +140,10 @@ export default function ResultsScreen() {
               nutriscore: item.nutriscore_grade
                 ? item.nutriscore_grade.toUpperCase()
                 : "?",
-              ecoscore: "?",
+              ecoscore: item.ecoscore_grade
+                ? item.ecoscore_grade.toUpperCase()
+                : "?",
+              novaGroup: item.nova_group || null,
             };
 
             return (

@@ -1,5 +1,7 @@
 // Esta es la pantalla de detalle del producto. Aquí es donde el usuario verá la información detallada de un producto específico después de seleccionarlo de una lista o realizar una búsqueda.
 
+import { AlertBox } from "@/src/components/AlertBox";
+import { NutritionRow } from "@/src/components/NutritionRow";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -140,13 +142,146 @@ export default function ProductDetailScreen() {
                 backgroundColor={"#F4F6F6"}
               />
             )}
+
+            {product.ecoscore_grade && (
+              <ScoreBadge
+                type="eco"
+                grade={product.ecoscore_grade.toUpperCase() as any}
+                variant="card"
+                backgroundColor={"#F4F6F6"}
+              />
+            )}
+
+            {product.nova_group && (
+              <ScoreBadge
+                type="nova"
+                grade={product.nova_group as any}
+                variant="card"
+                backgroundColor={"#F4F6F6"}
+              />
+            )}
           </View>
 
           {/* Badges de nutrientes destacados */}
+          <View style={styles.scoresRow}>
+            <View style={styles.nutrientBadge}>
+              <Typography
+                variant="caption"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeText}
+              >
+                ENERGY
+              </Typography>
+              <Typography
+                variant="h3"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeValue}
+              >
+                {product.nutriments?.energy}
+              </Typography>
+            </View>
+            <View style={styles.nutrientBadge}>
+              <Typography
+                variant="caption"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeText}
+              >
+                FAT
+              </Typography>
+              <Typography
+                variant="h3"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeValue}
+              >
+                {product.nutriments?.fat}
+              </Typography>
+            </View>
+            <View style={styles.nutrientBadge}>
+              <Typography
+                variant="caption"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeText}
+              >
+                PROTEIN
+              </Typography>
+              <Typography
+                variant="h3"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeValue}
+              >
+                {product.nutriments?.proteins}
+              </Typography>
+            </View>
+          </View>
 
           {/* Sección de ingredientes */}
+          <View style={styles.ingredientsSection}>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons
+                name="leaf"
+                size={20}
+                color="#27AE60"
+                style={{ marginRight: 8 }}
+              />
+              <Typography variant="h3">Ingredients</Typography>
+            </View>
+            <Typography variant="body" color="#5D6D7E" style={styles.paragraph}>
+              {product.ingredients_text}
+            </Typography>
+
+            {product.allergens && (
+              <AlertBox
+                title="ALLERGEN INFORMATION"
+                message={product.allergens}
+              />
+            )}
+          </View>
 
           {/* Tabla nutricional usando los componentes modulares */}
+          <View style={styles.nutritionSection}>
+            <Typography variant="h3" style={{ marginBottom: 16 }}>
+              Nutritional Values (per 100ml)
+            </Typography>
+
+            {product.nutriments && (
+              <View>
+                <NutritionRow
+                  label="Energy"
+                  value={product.nutriments.energy?.toString() || "-"}
+                />
+                <NutritionRow
+                  label="Fat"
+                  value={product.nutriments.fat?.toString() || "-"}
+                />
+                <NutritionRow
+                  label="of which saturates"
+                  value={product.nutriments["saturated-fat"]?.toString() || "-"}
+                  indent
+                />
+                <NutritionRow
+                  label="Carbohydrate"
+                  value={product.nutriments.carbohydrates?.toString() || "-"}
+                />
+                <NutritionRow
+                  label="of which sugars"
+                  value={product.nutriments.sugars?.toString() || "-"}
+                  indent
+                />
+                <NutritionRow
+                  label="Fibre"
+                  value={product.nutriments.fiber?.toString() || "-"}
+                />
+                <NutritionRow
+                  label="Protein"
+                  value={product.nutriments.proteins?.toString() || "-"}
+                />
+                <NutritionRow
+                  label="Salt"
+                  value={product.nutriments.salt?.toString() || "-"}
+                />
+              </View>
+            )}
+          </View>
 
           <View style={{ height: 60 }} />
         </View>

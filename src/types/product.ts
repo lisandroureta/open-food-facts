@@ -36,6 +36,20 @@ export interface APIProduct {
   brands?: string;
   image_url?: string;
   nutriscore_grade?: string;
+  ecoscore_grade?: string;
+  nova_group?: number;
+  ingredients_text?: string;
+  allergens?: string;
+  nutriments?: {
+    energy?: string | number;
+    fat?: string | number;
+    "saturated-fat"?: string | number; // Open Food Facts usa guiones, por eso las comillas
+    carbohydrates?: string | number;
+    sugars?: string | number;
+    fiber?: string | number;
+    proteins?: string | number;
+    salt?: string | number;
+  };
 }
 
 export interface APIProductResponse {
