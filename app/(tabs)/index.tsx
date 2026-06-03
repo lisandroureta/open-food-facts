@@ -1,13 +1,13 @@
 import { Stack, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { BrandCard } from "../src/components/BrandCard";
-import { CategoryCard } from "../src/components/CategoryCard";
-import { FilterTag } from "../src/components/FilterTag";
-import { Header } from "../src/components/Header";
-import { Typography } from "../src/components/Typography";
-import { GLOBAL_BRANDS } from "../src/constants/mockBrands";
-import { MOCK_CATEGORIES } from "../src/constants/mockCategories";
-import { TASTE_FILTERS } from "../src/constants/mockFilters";
+import { BrandCard } from "../../src/components/BrandCard";
+import { CategoryCard } from "../../src/components/CategoryCard";
+import { FilterTag } from "../../src/components/FilterTag";
+import { Header } from "../../src/components/Header";
+import { Typography } from "../../src/components/Typography";
+import { GLOBAL_BRANDS } from "../../src/constants/mockBrands";
+import { MOCK_CATEGORIES } from "../../src/constants/mockCategories";
+import { TASTE_FILTERS } from "../../src/constants/mockFilters";
 
 // Esta es la pantalla de inicio de la aplicación. Por el momento, esto es lo que el usuario verá al abrir la app.
 // La pantalla index.tsx solo se preocupa por "dibujar", no almacena la información.

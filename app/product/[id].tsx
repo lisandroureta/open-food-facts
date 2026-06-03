@@ -1,5 +1,3 @@
-// Esta es la pantalla de detalle del producto. Aquí es donde el usuario verá la información detallada de un producto específico después de seleccionarlo de una lista o realizar una búsqueda.
-
 import { AlertBox } from "@/src/components/AlertBox";
 import { NutritionRow } from "@/src/components/NutritionRow";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -10,25 +8,32 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { Header } from "../../src/components/Header";
 import { ScoreBadge } from "../../src/components/ScoreBadge";
 import { Typography } from "../../src/components/Typography";
 import { getProductByBarcode } from "../../src/services/api";
+import { checkIsFavorite, toggleFavorite } from "../../src/services/storage";
 import { APIProduct } from "../../src/types/product";
+
+// Esta es la pantalla de detalle del producto. Aquí es donde el usuario verá la información detallada de un producto específico después de seleccionarlo de una lista o realizar una búsqueda.
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  // Normalizamos la variable asegurándonos de que sea un texto simple (y si no existe, un texto vacío)
+  const safeId = Array.isArray(id) ? id[0] : (id || "");
 
-  // --- FASE 1: MEMORIA (ESTADO) ---
+  // MEMORIA (ESTADO)
   const [product, setProduct] = useState<APIProduct | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  // --- FASE 2: CICLO DE VIDA (CONEXIÓN A INTERNET) ---
+  // CICLO DE VIDA (CONEXIÓN A INTERNET)
   useEffect(() => {
     const fetchProductData = async () => {
       setIsLoading(true);
@@ -37,12 +42,15 @@ export default function ProductDetailScreen() {
       // TRUCO TEMPORAL: Si vienes del Home tocando la botella de Oatly (id '3'),
       // forzamos a que busque la Coca-Cola para probar la API real.
       // Si ya le pasas un código de barras real, usa ese.
-      const barcodeToSearch = id === "3" ? "5449000000996" : (id as string);
+      const barcodeToSearch = safeId === "3" ? "5449000000996" : (safeId as string);
 
       const data = await getProductByBarcode(barcodeToSearch);
 
       if (data && data.product) {
         setProduct(data.product);
+        // Revisamos si este código de barras ya está guardado en el teléfono
+        const favoriteStatus = await checkIsFavorite(barcodeToSearch);
+        setIsFavorite(favoriteStatus);
       } else {
         setError("Producto no encontrado en la base de datos mundial.");
       }
@@ -51,9 +59,31 @@ export default function ProductDetailScreen() {
     };
 
     fetchProductData();
-  }, [id]);
+  }, [safeId]);
 
-  // --- FASE 3: RENDERIZADO DE ESTADOS DE CARGA Y ERROR ---
+  // Función que se ejecuta al tocar el corazón
+  const handleToggleFavorite = async () => {
+    if (!product) return;
+
+    // Armamos un producto "ligero" solo con lo que necesitamos para la lista de favoritos
+    const compactProduct = {
+      id: product.code,
+      name: product.product_name || "Sin Nombre",
+      brand: product.brands || "Marca desconocida",
+      imageUrl: product.image_url ? { uri: product.image_url } : null,
+      nutriscore: product.nutriscore_grade ? product.nutriscore_grade.toUpperCase() : "?",
+      ecoscore: product.ecoscore_grade ? product.ecoscore_grade.toUpperCase() : "?",
+      novaGroup: product.nova_group || null,
+    };
+
+    // Mandamos la orden al disco duro
+    const isNowFavorite = await toggleFavorite(compactProduct);
+    
+    // Actualizamos la pantalla al instante
+    setIsFavorite(isNowFavorite); 
+  };
+
+  // RENDERIZADO DE ESTADOS DE CARGA Y ERROR
   if (isLoading) {
     return (
       <View style={[styles.rootContainer, styles.center]}>
@@ -121,9 +151,18 @@ export default function ProductDetailScreen() {
 
         {/* Tarjeta blanca flotante */}
         <View style={styles.card}>
-          <View style={styles.favoriteButton}>
-            <MaterialCommunityIcons name="heart" size={24} color="#27AE60" />
-          </View>
+          {/* Botón interactivo de favoritos */}
+          <TouchableOpacity 
+            style={styles.favoriteButton} 
+            onPress={handleToggleFavorite}
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons 
+              name={isFavorite ? "heart" : "heart-outline"} 
+              size={24} 
+              color="#27AE60" 
+            />
+          </TouchableOpacity>
 
           <Typography variant="caption" color={"#27AE60"} style={styles.brand}>
             {product.brands || "Marca Desconocida"}
