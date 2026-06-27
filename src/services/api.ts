@@ -56,7 +56,7 @@ export const searchProducts = async (
   page: number = 1,
 ): Promise<SearchResult> => {
   try {
-    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&page_size=24&page=${page}&fields=code,product_name,brands,image_url,nutriscore_grade,ecoscore_grade,nova_group`;
+    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&page_size=10&page=${page}&fields=code,product_name,brands,image_url,nutriscore_grade,ecoscore_grade,nova_group`;
     const response = await fetch(url, {
       headers: {
         "User-Agent": "DigitalEpicurean - React Native App - Academic Project",

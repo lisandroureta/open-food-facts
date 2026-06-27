@@ -24,7 +24,7 @@ export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   // Normalizamos la variable asegurándonos de que sea un texto simple (y si no existe, un texto vacío)
-  const safeId = Array.isArray(id) ? id[0] : (id || "");
+  const safeId = Array.isArray(id) ? id[0] : id || "";
 
   // MEMORIA (ESTADO)
   const [product, setProduct] = useState<APIProduct | null>(null);
@@ -42,7 +42,8 @@ export default function ProductDetailScreen() {
       // TRUCO TEMPORAL: Si vienes del Home tocando la botella de Oatly (id '3'),
       // forzamos a que busque la Coca-Cola para probar la API real.
       // Si ya le pasas un código de barras real, usa ese.
-      const barcodeToSearch = safeId === "3" ? "5449000000996" : (safeId as string);
+      const barcodeToSearch =
+        safeId === "3" ? "5449000000996" : (safeId as string);
 
       const data = await getProductByBarcode(barcodeToSearch);
 
@@ -71,16 +72,20 @@ export default function ProductDetailScreen() {
       name: product.product_name || "Sin Nombre",
       brand: product.brands || "Marca desconocida",
       imageUrl: product.image_url ? { uri: product.image_url } : null,
-      nutriscore: product.nutriscore_grade ? product.nutriscore_grade.toUpperCase() : "?",
-      ecoscore: product.ecoscore_grade ? product.ecoscore_grade.toUpperCase() : "?",
+      nutriscore: product.nutriscore_grade
+        ? product.nutriscore_grade.toUpperCase()
+        : "?",
+      ecoscore: product.ecoscore_grade
+        ? product.ecoscore_grade.toUpperCase()
+        : "?",
       novaGroup: product.nova_group || null,
     };
 
     // Mandamos la orden al disco duro
     const isNowFavorite = await toggleFavorite(compactProduct);
-    
+
     // Actualizamos la pantalla al instante
-    setIsFavorite(isNowFavorite); 
+    setIsFavorite(isNowFavorite);
   };
 
   // RENDERIZADO DE ESTADOS DE CARGA Y ERROR
@@ -152,15 +157,15 @@ export default function ProductDetailScreen() {
         {/* Tarjeta blanca flotante */}
         <View style={styles.card}>
           {/* Botón interactivo de favoritos */}
-          <TouchableOpacity 
-            style={styles.favoriteButton} 
+          <TouchableOpacity
+            style={styles.favoriteButton}
             onPress={handleToggleFavorite}
             activeOpacity={0.7}
           >
-            <MaterialCommunityIcons 
-              name={isFavorite ? "heart" : "heart-outline"} 
-              size={24} 
-              color="#27AE60" 
+            <MaterialCommunityIcons
+              name={isFavorite ? "heart" : "heart-outline"}
+              size={24}
+              color="#27AE60"
             />
           </TouchableOpacity>
 
@@ -249,6 +254,22 @@ export default function ProductDetailScreen() {
                 style={styles.nutrientBadgeValue}
               >
                 {product.nutriments?.proteins}
+              </Typography>
+            </View>
+            <View style={styles.nutrientBadge}>
+              <Typography
+                variant="caption"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeText}
+              >
+                CARBS
+              </Typography>
+              <Typography
+                variant="h3"
+                color={"#1D8348"}
+                style={styles.nutrientBadgeValue}
+              >
+                {product.nutriments?.carbohydrates}
               </Typography>
             </View>
           </View>
