@@ -1,4 +1,3 @@
-// app/(tabs)/_layout.tsx
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Platform, StyleSheet, Text, View } from "react-native";
@@ -8,6 +7,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        // Ocultamos las etiquetas por defecto de Expo porque vamos a dibujar nuestra propia interfaz a medida
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
@@ -17,6 +17,7 @@ export default function TabLayout() {
           shadowOffset: { width: 0, height: -4 },
           shadowOpacity: 0.05,
           shadowRadius: 10,
+          // Calibramos la altura de la barra según el sistema operativo
           height: Platform.OS === "ios" ? 90 : 75,
           paddingTop: 10,
           paddingBottom: Platform.OS === "ios" ? 20 : 10,
@@ -24,6 +25,7 @@ export default function TabLayout() {
         },
       }}
     >
+      {/* HOME */}
       <Tabs.Screen
         name="index"
         options={{
@@ -42,6 +44,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* BUSCAR */}
       <Tabs.Screen
         name="search"
         options={{
@@ -60,6 +63,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* FAVORITOS */}
       <Tabs.Screen
         name="favorites"
         options={{
