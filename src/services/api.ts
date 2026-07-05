@@ -1,7 +1,6 @@
 import { APIProduct, APIProductResponse } from "../types/product";
 
-// Centralizamos la URL base. Si el día de mañana la API cambia de versión (ej: v1 en lugar de v0),
-// solo lo modificamos en esta línea y toda la aplicación se actualiza. (Principio DRY)
+// Centralizamos la URL base
 const BASE_URL = "https://world.openfoodfacts.org/api/v0/product";
 
 /**
@@ -13,22 +12,21 @@ export const getProductByBarcode = async (
   barcode: string,
 ): Promise<APIProductResponse | null> => {
   try {
-    // 1. OPTIMIZACIÓN: Armamos la URL inyectando el código dinámico
+    // armamos la URL inyectando el código dinámico
     const url = `${BASE_URL}/${barcode}.json?fields=code,product_name,brands,image_url,nutriscore_grade,ecoscore_grade,nova_group,ingredients_text,allergens,nutriments`;
 
-    // 2. LA PETICIÓN: fetch() va a internet. 'await' le dice al código:
-    // "Espera aquí el ticket (Promesa) hasta que el servidor de Francia responda, pero no congeles la pantalla"
+    // la petición
     const response = await fetch(url);
 
-    // 3. MANEJO DE RED: Si el servidor está caído o hay un error 404/500
+    // manejo de red
     if (!response.ok) {
       throw new Error(`Error de red. Código HTTP: ${response.status}`);
     }
 
-    // 4. PARSEO: Convertimos el texto de respuesta a un objeto JSON que TypeScript entiende
+    // el parseo
     const data: APIProductResponse = await response.json();
 
-    // 5. LÓGICA DE NEGOCIO: Validamos el status 0 (que descubrimos en Postman cuando un producto no existe)
+    // lógica de negocio
     if (data.status === 0) {
       console.warn(
         `El producto con código ${barcode} no se encontró en Open Food Facts.`,
@@ -36,10 +34,9 @@ export const getProductByBarcode = async (
       return null; // Devolvemos null para que la UI sepa que debe mostrar la pantalla de "No encontrado"
     }
 
-    // ¡Éxito! Devolvemos los datos limpios y tipados
+    // si es éxito, devolvemos los datos limpios y tipados
     return data;
   } catch (error) {
-    // Si el usuario está en Modo Avión o se corta el Wi-Fi, evitamos que la app crashee violentamente
     console.error("Fallo catastrófico en la conexión:", error);
     return null;
   }

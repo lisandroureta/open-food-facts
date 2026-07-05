@@ -4,5 +4,5 @@ import { ImageSourcePropType } from "react-native";
 export interface Brand {
   id: string;
   name: string;
-  logo?: ImageSourcePropType; // Sostiene referencias estáticas locales a través de require() de manera segura
+  logo?: ImageSourcePropType;
 }
