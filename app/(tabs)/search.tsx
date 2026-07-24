@@ -1,67 +1,21 @@
 // app/(tabs)/search.tsx
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
+import { toProductSummary } from "../../src/adapters/product";
 import { Header } from "../../src/components/Header";
 import { ProductListItem } from "../../src/components/ProductListItem";
 import { SearchBar } from "../../src/components/SearchBar";
 import { Typography } from "../../src/components/Typography";
-import { searchProducts } from "../../src/services/api";
+import { useProductSearch } from "../../src/hooks/useProductSearch";
 
 export default function SearchTabScreen() {
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-
-  // controlador de búsqueda
-  useEffect(() => {
-    // Debounce de para evitar colapsar la API con peticiones por cada letra que se escribe
-    const delayDebounceFn = setTimeout(async () => {
-      setIsLoading(true);
-      // Reiniciamos el contador de páginas a 1 porque iniciamos una búsqueda nueva
-      setPage(1);
-
-      // Si el buscador está vacío pasamos un espacio en blanco para forzar a la API a devolvernos el catálogo general paginado
-      const queryToSearch = searchQuery.trim() !== "" ? searchQuery : " ";
-
-      const { products, totalCount } = await searchProducts(queryToSearch, 1);
-
-      setProducts(products);
-      setTotalCount(totalCount);
-      setIsLoading(false);
-    }, 600);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
-
-  // controlador del scroll infinito
-  const handleLoadMore = async () => {
-    // Validamos que no haya una descarga en curso o que ya hayamos llegado al límite total de productos en el servidor
-    if (isFetchingMore || isLoading || products.length >= totalCount) return;
-
-    setIsFetchingMore(true);
-    const nextPage = page + 1;
-    const queryToSearch = searchQuery.trim() !== "" ? searchQuery : " ";
-
-    const { products: newProducts } = await searchProducts(
-      queryToSearch,
-      nextPage,
-    );
-
-    // Si la API nos devuelve nuevos datos, los anexamos al final del arreglo existente manteniendo la lista en memoria
-    if (newProducts.length > 0) {
-      setProducts((prevProducts) => [...prevProducts, ...newProducts]);
-      setPage(nextPage);
-    }
-
-    setIsFetchingMore(false);
-  };
+  const { products, isLoading, isFetchingMore, totalCount, loadMore } =
+    useProductSearch({ text: searchQuery });
 
   return (
     <View style={styles.container}>
@@ -94,7 +48,7 @@ export default function SearchTabScreen() {
             />
           }
           // Disparamos la carga de la siguiente página cuando el usuario se acerca al 50% del final de la pantalla activa
-          onEndReached={handleLoadMore}
+          onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
             isFetchingMore ? (
@@ -105,29 +59,12 @@ export default function SearchTabScreen() {
               />
             ) : null
           }
-          renderItem={({ item }) => {
-            // Mapeamos los nombres crudos de Open Food Facts a nuestra estructura de tipados
-            const mappedProduct: any = {
-              id: item.code,
-              name: item.product_name || "Sin Nombre",
-              brand: item.brands || "Marca desconocida",
-              imageUrl: item.image_url ? { uri: item.image_url } : null,
-              nutriscore: item.nutriscore_grade
-                ? item.nutriscore_grade.toUpperCase()
-                : "?",
-              ecoscore: item.ecoscore_grade
-                ? item.ecoscore_grade.toUpperCase()
-                : "?",
-              novaGroup: item.nova_group || null,
-            };
-
-            return (
-              <ProductListItem
-                product={mappedProduct}
-                onPress={() => router.push(`/product/${item.code}`)}
-              />
-            );
-          }}
+          renderItem={({ item }) => (
+            <ProductListItem
+              product={toProductSummary(item)}
+              onPress={() => router.push(`/product/${item.code}`)}
+            />
+          )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />

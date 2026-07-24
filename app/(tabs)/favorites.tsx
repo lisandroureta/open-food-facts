@@ -1,31 +1,15 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { Stack, useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { Header } from "../../src/components/Header";
 import { ProductListItem } from "../../src/components/ProductListItem";
 import { Typography } from "../../src/components/Typography";
-import { getFavorites } from "../../src/services/storage";
+import { useFavorites } from "../../src/context/FavoritesContext";
 
 export default function FavoritesScreen() {
   const router = useRouter();
 
-  const [favorites, setFavorites] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // useFocusEffect corre cada vez que la pantalla aparece en el dispositivo
-  useFocusEffect(
-    useCallback(() => {
-      const loadFavorites = async () => {
-        setIsLoading(true);
-        const savedProducts = await getFavorites();
-        setFavorites(savedProducts);
-        setIsLoading(false);
-      };
-
-      loadFavorites();
-    }, []),
-  );
+  const { favorites, isLoading } = useFavorites();
 
   return (
     <View style={styles.container}>

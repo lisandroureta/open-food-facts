@@ -5,7 +5,7 @@ import { Typography } from "./Typography";
 // 1. Definimos las Props aceptadas, incluyendo la nueva prop 'variant'
 interface ScoreBadgeProps {
   type: "nutri" | "eco" | "nova";
-  grade: "A" | "B" | "C" | "D" | "E" | 1 | 2 | 3 | 4;
+  grade: "A" | "B" | "C" | "D" | "E" | "?" | 1 | 2 | 3 | 4;
   variant?: "default" | "card"; // Patrón de diseño por variantes
   backgroundColor?: string;
 }

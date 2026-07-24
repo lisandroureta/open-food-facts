@@ -2,6 +2,7 @@ import { APIProduct, APIProductResponse } from "../types/product";
 
 // Centralizamos la URL base
 const BASE_URL = "https://world.openfoodfacts.org/api/v0/product";
+const USER_AGENT = "DigitalEpicurean - React Native App - Academic Project";
 
 /**
  * Función asíncrona (Promesa) para buscar un producto específico.
@@ -48,15 +49,30 @@ export interface SearchResult {
   error: string | null;
 }
 
+// Parámetro discriminado: búsqueda de texto libre vs. filtrado por tags de taxonomía
+export type SearchQuery =
+  | { type: "text"; query: string }
+  | { type: "tags"; categoryTag?: string; brandTag?: string };
+
+const SEARCH_FIELDS =
+  "code,product_name,brands,image_url,nutriscore_grade,ecoscore_grade,nova_group";
+const PAGE_SIZE = 10;
+
 export const searchProducts = async (
-  query: string,
+  searchQuery: SearchQuery,
   page: number = 1,
 ): Promise<SearchResult> => {
   try {
-    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&page_size=10&page=${page}&fields=code,product_name,brands,image_url,nutriscore_grade,ecoscore_grade,nova_group`;
+    const url =
+      searchQuery.type === "text"
+        ? `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
+            searchQuery.query,
+          )}&search_simple=1&action=process&json=1&page_size=${PAGE_SIZE}&page=${page}&fields=${SEARCH_FIELDS}`
+        : buildTagSearchUrl(searchQuery, page);
+
     const response = await fetch(url, {
       headers: {
-        "User-Agent": "DigitalEpicurean - React Native App - Academic Project",
+        "User-Agent": USER_AGENT,
       },
     });
 
@@ -79,3 +95,23 @@ export const searchProducts = async (
     return { products: [], totalCount: 0, error: "Error de conexión." };
   }
 };
+
+function buildTagSearchUrl(
+  searchQuery: { categoryTag?: string; brandTag?: string },
+  page: number,
+): string {
+  const params = new URLSearchParams({
+    page_size: PAGE_SIZE.toString(),
+    page: page.toString(),
+    fields: SEARCH_FIELDS,
+  });
+
+  if (searchQuery.categoryTag) {
+    params.set("categories_tags", searchQuery.categoryTag);
+  }
+  if (searchQuery.brandTag) {
+    params.set("brands_tags", searchQuery.brandTag);
+  }
+
+  return `https://world.openfoodfacts.org/api/v2/search?${params.toString()}`;
+}

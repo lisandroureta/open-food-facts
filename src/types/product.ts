@@ -2,22 +2,24 @@ import { ImageSourcePropType } from "react-native";
 
 // Este archivo define los tipos relacionados con los productos
 
-// Estructura provisional del modelo de Producto
-export interface Product {
+export type Grade = "A" | "B" | "C" | "D" | "E" | "?";
+
+// Modelo mínimo para contextos de lista (búsqueda, resultados, favoritos)
+export interface ProductSummary {
   id: string;
   name: string;
   brand: string;
-  brandId: string; // Para filtrar por marca
-  categoryId: string; // Para filtrar por categoría
-  tastes: string[]; // Para filtrar por etiquetas
-  imageUrl: ImageSourcePropType; // Tipado nativo de React Native para recursos locales empaquetados por Metro
-  backgroundColor: string; // Para el fondo de la foto en el detalle
-  nutriscore: "A" | "B" | "C" | "D" | "E";
-  ecoscore: "A" | "B" | "C" | "D" | "E";
-  novaGroup?: number;
-  ingredients?: string;
-  allergens?: string;
-  nutritionalValues?: {
+  imageUrl: ImageSourcePropType | null;
+  nutriscore: Grade;
+  ecoscore: Grade;
+  novaGroup: number | null;
+}
+
+// Modelo extendido para la pantalla de detalle
+export interface ProductDetail extends ProductSummary {
+  ingredients: string;
+  allergens: string | null;
+  nutriments: {
     energy: string;
     fat: string;
     saturatedFat: string;

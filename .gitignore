@@ -3,6 +3,12 @@
 # dependencies
 node_modules/
 
+# documentacion
+openspec
+
+# Claude
+.claude
+
 # Expo
 .expo/
 dist/

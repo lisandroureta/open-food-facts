@@ -1,11 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import { Product } from "../types";
+import { ProductSummary } from "../types";
 import { ScoreBadge } from "./ScoreBadge";
 import { Typography } from "./Typography";
 
 interface ProductListItemProps {
-  product: Product;
+  product: ProductSummary;
   onPress: () => void;
 }
 
@@ -22,7 +22,7 @@ export function ProductListItem({ product, onPress }: ProductListItemProps) {
       {/* Imagen */}
       <View style={styles.imageContainer}>
         <Image
-          source={product.imageUrl}
+          source={product.imageUrl ?? undefined}
           style={styles.image}
           resizeMode="contain"
         />

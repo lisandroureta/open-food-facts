@@ -2,7 +2,7 @@ import { AlertBox } from "@/src/components/AlertBox";
 import { NutritionRow } from "@/src/components/NutritionRow";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -11,11 +11,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { toProductDetail, toProductSummary } from "../../src/adapters/product";
 import { Header } from "../../src/components/Header";
 import { ScoreBadge } from "../../src/components/ScoreBadge";
 import { Typography } from "../../src/components/Typography";
+import { useFavorites } from "../../src/context/FavoritesContext";
 import { getProductByBarcode } from "../../src/services/api";
-import { checkIsFavorite, toggleFavorite } from "../../src/services/storage";
 import { APIProduct } from "../../src/types/product";
 
 // Esta es la pantalla de detalle del producto. Aquí es donde el usuario verá la información detallada de un producto específico después de seleccionarlo de una lista o realizar una búsqueda.
@@ -26,12 +27,18 @@ export default function ProductDetailScreen() {
   // Normalizamos la variable asegurándonos de que sea un texto simple (y si no existe, un texto vacío)
   const safeId = Array.isArray(id) ? id[0] : id || "";
 
+  const { isFavorite, toggleFavorite } = useFavorites();
+
   // MEMORIA (ESTADO)
-  const [product, setProduct] = useState<APIProduct | null>(null);
+  const [apiProduct, setApiProduct] = useState<APIProduct | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
+
+  const product = useMemo(
+    () => (apiProduct ? toProductDetail(apiProduct) : null),
+    [apiProduct],
+  );
 
   // CICLO DE VIDA (CONEXIÓN A INTERNET)
   useEffect(() => {
@@ -39,19 +46,10 @@ export default function ProductDetailScreen() {
       setIsLoading(true);
       setError(null);
 
-      // TRUCO TEMPORAL: Si vienes del Home tocando la botella de Oatly (id '3'),
-      // forzamos a que busque la Coca-Cola para probar la API real.
-      // Si ya le pasas un código de barras real, usa ese.
-      const barcodeToSearch =
-        safeId === "3" ? "5449000000996" : (safeId as string);
-
-      const data = await getProductByBarcode(barcodeToSearch);
+      const data = await getProductByBarcode(safeId as string);
 
       if (data && data.product) {
-        setProduct(data.product);
-        // Revisamos si este código de barras ya está guardado en el teléfono
-        const favoriteStatus = await checkIsFavorite(barcodeToSearch);
-        setIsFavorite(favoriteStatus);
+        setApiProduct(data.product);
       } else {
         setError("Producto no encontrado en la base de datos mundial.");
       }
@@ -63,29 +61,9 @@ export default function ProductDetailScreen() {
   }, [safeId]);
 
   // Función que se ejecuta al tocar el corazón
-  const handleToggleFavorite = async () => {
-    if (!product) return;
-
-    // Armamos un producto "ligero" solo con lo que necesitamos para la lista de favoritos
-    const compactProduct = {
-      id: product.code,
-      name: product.product_name || "Sin Nombre",
-      brand: product.brands || "Marca desconocida",
-      imageUrl: product.image_url ? { uri: product.image_url } : null,
-      nutriscore: product.nutriscore_grade
-        ? product.nutriscore_grade.toUpperCase()
-        : "?",
-      ecoscore: product.ecoscore_grade
-        ? product.ecoscore_grade.toUpperCase()
-        : "?",
-      novaGroup: product.nova_group || null,
-    };
-
-    // Mandamos la orden al disco duro
-    const isNowFavorite = await toggleFavorite(compactProduct);
-
-    // Actualizamos la pantalla al instante
-    setIsFavorite(isNowFavorite);
+  const handleToggleFavorite = () => {
+    if (!apiProduct) return;
+    toggleFavorite(toProductSummary(apiProduct));
   };
 
   // RENDERIZADO DE ESTADOS DE CARGA Y ERROR
@@ -131,7 +109,7 @@ export default function ProductDetailScreen() {
       <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
         {/* Sección de la Imagen */}
         <View style={styles.imageSection}>
-          {product.image_url && (
+          {product.imageUrl && (
             <>
               {/* Mostramos una rueda de carga SOLO si la imagen sigue bajando */}
               {isImageLoading && (
@@ -143,7 +121,7 @@ export default function ProductDetailScreen() {
               )}
 
               <Image
-                source={{ uri: product.image_url }}
+                source={product.imageUrl}
                 style={styles.productImage}
                 resizeMode="contain"
                 // React Native nos avisa cuando empieza y termina de descargar
@@ -163,43 +141,43 @@ export default function ProductDetailScreen() {
             activeOpacity={0.7}
           >
             <MaterialCommunityIcons
-              name={isFavorite ? "heart" : "heart-outline"}
+              name={isFavorite(product.id) ? "heart" : "heart-outline"}
               size={24}
               color="#27AE60"
             />
           </TouchableOpacity>
 
           <Typography variant="caption" color={"#27AE60"} style={styles.brand}>
-            {product.brands || "Marca Desconocida"}
+            {product.brand}
           </Typography>
           <Typography variant="h1" style={styles.title}>
-            {product.product_name || "Sin Nombre"}
+            {product.name}
           </Typography>
 
           {/* Badges de puntuación */}
           <View style={styles.scoresRow}>
-            {product.nutriscore_grade && (
+            {product.nutriscore !== "?" && (
               <ScoreBadge
                 type="nutri"
-                grade={product.nutriscore_grade.toUpperCase() as any}
+                grade={product.nutriscore}
                 variant="card"
                 backgroundColor={"#F4F6F6"}
               />
             )}
 
-            {product.ecoscore_grade && (
+            {product.ecoscore !== "?" && (
               <ScoreBadge
                 type="eco"
-                grade={product.ecoscore_grade.toUpperCase() as any}
+                grade={product.ecoscore}
                 variant="card"
                 backgroundColor={"#F4F6F6"}
               />
             )}
 
-            {product.nova_group && (
+            {product.novaGroup && (
               <ScoreBadge
                 type="nova"
-                grade={product.nova_group as any}
+                grade={product.novaGroup as any}
                 variant="card"
                 backgroundColor={"#F4F6F6"}
               />
@@ -221,7 +199,7 @@ export default function ProductDetailScreen() {
                 color={"#1D8348"}
                 style={styles.nutrientBadgeValue}
               >
-                {product.nutriments?.energy}
+                {product.nutriments.energy}
               </Typography>
             </View>
             <View style={styles.nutrientBadge}>
@@ -237,7 +215,7 @@ export default function ProductDetailScreen() {
                 color={"#1D8348"}
                 style={styles.nutrientBadgeValue}
               >
-                {product.nutriments?.fat}
+                {product.nutriments.fat}
               </Typography>
             </View>
             <View style={styles.nutrientBadge}>
@@ -253,7 +231,7 @@ export default function ProductDetailScreen() {
                 color={"#1D8348"}
                 style={styles.nutrientBadgeValue}
               >
-                {product.nutriments?.proteins}
+                {product.nutriments.protein}
               </Typography>
             </View>
             <View style={styles.nutrientBadge}>
@@ -269,7 +247,7 @@ export default function ProductDetailScreen() {
                 color={"#1D8348"}
                 style={styles.nutrientBadgeValue}
               >
-                {product.nutriments?.carbohydrates}
+                {product.nutriments.carbs}
               </Typography>
             </View>
           </View>
@@ -286,7 +264,7 @@ export default function ProductDetailScreen() {
               <Typography variant="h3">Ingredients</Typography>
             </View>
             <Typography variant="body" color="#5D6D7E" style={styles.paragraph}>
-              {product.ingredients_text}
+              {product.ingredients}
             </Typography>
 
             {product.allergens && (
@@ -303,44 +281,30 @@ export default function ProductDetailScreen() {
               Nutritional Values (per 100ml)
             </Typography>
 
-            {product.nutriments && (
-              <View>
-                <NutritionRow
-                  label="Energy"
-                  value={product.nutriments.energy?.toString() || "-"}
-                />
-                <NutritionRow
-                  label="Fat"
-                  value={product.nutriments.fat?.toString() || "-"}
-                />
-                <NutritionRow
-                  label="of which saturates"
-                  value={product.nutriments["saturated-fat"]?.toString() || "-"}
-                  indent
-                />
-                <NutritionRow
-                  label="Carbohydrate"
-                  value={product.nutriments.carbohydrates?.toString() || "-"}
-                />
-                <NutritionRow
-                  label="of which sugars"
-                  value={product.nutriments.sugars?.toString() || "-"}
-                  indent
-                />
-                <NutritionRow
-                  label="Fibre"
-                  value={product.nutriments.fiber?.toString() || "-"}
-                />
-                <NutritionRow
-                  label="Protein"
-                  value={product.nutriments.proteins?.toString() || "-"}
-                />
-                <NutritionRow
-                  label="Salt"
-                  value={product.nutriments.salt?.toString() || "-"}
-                />
-              </View>
-            )}
+            <View>
+              <NutritionRow label="Energy" value={product.nutriments.energy} />
+              <NutritionRow label="Fat" value={product.nutriments.fat} />
+              <NutritionRow
+                label="of which saturates"
+                value={product.nutriments.saturatedFat}
+                indent
+              />
+              <NutritionRow
+                label="Carbohydrate"
+                value={product.nutriments.carbs}
+              />
+              <NutritionRow
+                label="of which sugars"
+                value={product.nutriments.sugars}
+                indent
+              />
+              <NutritionRow label="Fibre" value={product.nutriments.fiber} />
+              <NutritionRow
+                label="Protein"
+                value={product.nutriments.protein}
+              />
+              <NutritionRow label="Salt" value={product.nutriments.salt} />
+            </View>
           </View>
 
           <View style={{ height: 60 }} />
