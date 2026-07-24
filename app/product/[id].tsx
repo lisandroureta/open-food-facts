@@ -2,7 +2,7 @@ import { AlertBox } from "@/src/components/AlertBox";
 import { NutritionRow } from "@/src/components/NutritionRow";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -15,6 +15,7 @@ import { toProductDetail, toProductSummary } from "../../src/adapters/product";
 import { Header } from "../../src/components/Header";
 import { ScoreBadge } from "../../src/components/ScoreBadge";
 import { Typography } from "../../src/components/Typography";
+import { useAuth } from "../../src/context/AuthContext";
 import { useFavorites } from "../../src/context/FavoritesContext";
 import { getProductByBarcode } from "../../src/services/api";
 import { APIProduct } from "../../src/types/product";
@@ -27,6 +28,7 @@ export default function ProductDetailScreen() {
   // Normalizamos la variable asegurándonos de que sea un texto simple (y si no existe, un texto vacío)
   const safeId = Array.isArray(id) ? id[0] : id || "";
 
+  const { session, setPendingAction } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
 
   // MEMORIA (ESTADO)
@@ -39,6 +41,12 @@ export default function ProductDetailScreen() {
     () => (apiProduct ? toProductDetail(apiProduct) : null),
     [apiProduct],
   );
+
+  // Referencias estables: react-native-web reinicia la carga de la imagen
+  // cada vez que estos callbacks cambian de identidad, así que deben ser
+  // los mismos en cada render (evita un loop de carga infinito).
+  const handleImageLoadStart = useCallback(() => setIsImageLoading(true), []);
+  const handleImageLoadEnd = useCallback(() => setIsImageLoading(false), []);
 
   // CICLO DE VIDA (CONEXIÓN A INTERNET)
   useEffect(() => {
@@ -63,6 +71,14 @@ export default function ProductDetailScreen() {
   // Función que se ejecuta al tocar el corazón
   const handleToggleFavorite = () => {
     if (!apiProduct) return;
+
+    if (!session) {
+      // Guardamos la acción para que se complete sola apenas el usuario inicie sesión
+      setPendingAction(() => toggleFavorite(toProductSummary(apiProduct)));
+      router.push("/login");
+      return;
+    }
+
     toggleFavorite(toProductSummary(apiProduct));
   };
 
@@ -125,8 +141,8 @@ export default function ProductDetailScreen() {
                 style={styles.productImage}
                 resizeMode="contain"
                 // React Native nos avisa cuando empieza y termina de descargar
-                onLoadStart={() => setIsImageLoading(true)}
-                onLoadEnd={() => setIsImageLoading(false)}
+                onLoadStart={handleImageLoadStart}
+                onLoadEnd={handleImageLoadEnd}
               />
             </>
           )}

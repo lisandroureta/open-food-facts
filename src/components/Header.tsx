@@ -1,6 +1,8 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
 import { Typography } from "./Typography";
 
 // Componente unificado para la cabecera.
@@ -26,6 +28,33 @@ export function Header({
   // Extraemos las medidas físicas del dispositivo (Notch, Dynamic Island, Status Bar de Android)
   // para evitar que el header colisione con la cámara.
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { session, signOut } = useAuth();
+
+  // Comportamiento por defecto del ícono de cuenta: sin sesión navega a login,
+  // con sesión ofrece cerrar sesión. Solo se aplica si la pantalla no pasó su propio onRightPress.
+  const handleAvatarPress = () => {
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+
+    // Alert.alert es un no-op en react-native-web: en web usamos confirm() nativo del navegador.
+    if (Platform.OS === "web") {
+      if (window.confirm("¿Estás seguro que querés cerrar sesión?")) {
+        signOut();
+      }
+      return;
+    }
+
+    Alert.alert("Cerrar sesión", "¿Estás seguro que querés cerrar sesión?", [
+      { text: "Cancelar", style: "cancel" },
+      { text: "Cerrar sesión", style: "destructive", onPress: () => signOut() },
+    ]);
+  };
+
+  const resolvedOnRightPress =
+    onRightPress ?? (rightElement === "avatar" ? handleAvatarPress : undefined);
 
   // Función para renderizar dinámicamente el lado derecho según la variante solicitada por la pantalla padre
   const renderRightElement = () => {
@@ -64,7 +93,10 @@ export function Header({
         {title}
       </Typography>
 
-      <Pressable onPress={onRightPress || (() => {})} style={styles.iconButton}>
+      <Pressable
+        onPress={resolvedOnRightPress || (() => {})}
+        style={styles.iconButton}
+      >
         {renderRightElement()}
       </Pressable>
     </View>
