@@ -6,12 +6,14 @@ import { toProductSummary } from "../src/adapters/product";
 import { Header } from "../src/components/Header";
 import { ProductListItem } from "../src/components/ProductListItem";
 import { SearchBar } from "../src/components/SearchBar";
+import { useGoBack } from "../src/hooks/useGoBack";
 import { useProductSearch } from "../src/hooks/useProductSearch";
 
 // Esta es la pantalla de resultados. Acá es donde el usuario verá la lista de resultados después de realizar una búsqueda o acción que genere resultados.
 
 export default function ResultsScreen() {
   const router = useRouter();
+  const goBack = useGoBack();
 
   // Extraemos los filtros dinámicos provenientes de la navegación
   const params = useLocalSearchParams();
@@ -40,7 +42,7 @@ export default function ResultsScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       {/* Colocamos nuestro Header */}
-      <Header onLeftPress={() => router.back()} rightElement="avatar" />
+      <Header onLeftPress={goBack} rightElement="avatar" />
 
       <View style={styles.titleSection}>
         <Typography variant="h1" style={styles.title}>

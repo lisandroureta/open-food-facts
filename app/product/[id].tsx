@@ -17,6 +17,7 @@ import { ScoreBadge } from "../../src/components/ScoreBadge";
 import { Typography } from "../../src/components/Typography";
 import { useAuth } from "../../src/context/AuthContext";
 import { useFavorites } from "../../src/context/FavoritesContext";
+import { useGoBack } from "../../src/hooks/useGoBack";
 import { getProductByBarcode } from "../../src/services/api";
 import { APIProduct } from "../../src/types/product";
 
@@ -25,6 +26,7 @@ import { APIProduct } from "../../src/types/product";
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const goBack = useGoBack();
   // Normalizamos la variable asegurándonos de que sea un texto simple (y si no existe, un texto vacío)
   const safeId = Array.isArray(id) ? id[0] : id || "";
 
@@ -97,7 +99,7 @@ export default function ProductDetailScreen() {
   if (error || !product) {
     return (
       <View style={[styles.rootContainer, styles.center]}>
-        <Header onLeftPress={() => router.back()} />
+        <Header onLeftPress={goBack} />
         <Typography
           variant="h2"
           color="#C0392B"
@@ -115,7 +117,7 @@ export default function ProductDetailScreen() {
 
       {/* Header anclado (sticky) fuera del flujo del Scroll, con Z-Index 10 para que siempre esté por encima de todo */}
       <View style={styles.stickyHeader}>
-        <Header onLeftPress={() => router.back()} rightElement="share" />
+        <Header onLeftPress={goBack} rightElement="share" />
       </View>
 
       {/* Fondo de color absoluto (que depende del producto). Cubre la mitad de la pantalla y queda detrás del contenido (Z-Index 1) */}

@@ -17,13 +17,18 @@ export default function FavoritesScreen() {
   const router = useRouter();
 
   const { session, isLoading: isAuthLoading } = useAuth();
-  const { favorites, isLoading: isFavoritesLoading } = useFavorites();
+  const {
+    favorites,
+    isLoading: isFavoritesLoading,
+    error,
+  } = useFavorites();
 
   const isLoading = isAuthLoading || (!!session && isFavoritesLoading);
 
   const renderSubtitle = () => {
     if (isLoading) return "CARGANDO...";
     if (!session) return "INICIÁ SESIÓN PARA VER TUS FAVORITOS";
+    if (error) return "SIN CONEXIÓN";
     return `${favorites.length} PRODUCTOS GUARDADOS`;
   };
 
@@ -66,6 +71,27 @@ export default function FavoritesScreen() {
               Iniciar sesión
             </Typography>
           </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View style={styles.emptyState}>
+          <MaterialCommunityIcons
+            name="wifi-off"
+            size={64}
+            color="#D5DBDB"
+          />
+          <Typography variant="h3" style={{ marginTop: 16, color: "#7F8C8D" }}>
+            Sin conexión
+          </Typography>
+          <Typography
+            variant="body"
+            style={{ textAlign: "center", marginTop: 8, color: "#95A5A6" }}
+          >
+            {error}
+          </Typography>
         </View>
       );
     }

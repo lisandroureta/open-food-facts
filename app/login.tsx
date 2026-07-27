@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -13,13 +12,14 @@ import { AlertBox } from "../src/components/AlertBox";
 import { Header } from "../src/components/Header";
 import { Typography } from "../src/components/Typography";
 import { useAuth } from "../src/context/AuthContext";
+import { useGoBack } from "../src/hooks/useGoBack";
 
 // Pantalla única de autenticación: alterna entre "Iniciar sesión" y "Registrarse" con el mismo formulario.
 
 type AuthMode = "sign-in" | "sign-up";
 
 export default function LoginScreen() {
-  const router = useRouter();
+  const goBack = useGoBack();
   const { signIn, signUp } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("sign-in");
@@ -55,12 +55,12 @@ export default function LoginScreen() {
       return;
     }
 
-    router.back();
+    goBack();
   };
 
   return (
     <View style={styles.rootContainer}>
-      <Header onLeftPress={() => router.back()} />
+      <Header onLeftPress={goBack} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
